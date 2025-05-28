@@ -8,9 +8,12 @@ import (
 )
 
 func main() {
-
 	router := gin.New()
-	router.POST("/users/login", utils.CORS, controllers.Login)
-	router.GET("/activities/:id", utils.CORS, controllers.GetHotelByID)
-	router.Run()
+
+	router.Use(utils.CORS)
+
+	router.POST("/users/login", controllers.Login)
+	router.GET("/activities/:id", controllers.GetHotelByID) // cambiar nombre si no es hotel
+
+	router.Run(":8080")
 }
