@@ -41,7 +41,7 @@ func CreateActivity(ctx *gin.Context) {
 		return
 	}
 
-	err := services.CreateActivity(&newActivity)
+	_, err := services.CreateActivity(&newActivity)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create activity"})
 		return
@@ -63,7 +63,7 @@ func UpdateActivity(ctx *gin.Context) {
 		return
 	}
 
-	err = services.UpdateActivity(activityID, &updatedData)
+	_, err = services.UpdateActivity(activityID, &updatedData)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update activity"})
 		return
