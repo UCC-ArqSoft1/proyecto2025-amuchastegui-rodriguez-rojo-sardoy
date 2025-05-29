@@ -13,7 +13,7 @@ func main() {
 	router.Use(utils.CORS)
 
 	router.POST("/users/login", controllers.Login)
-	router.GET("/activities/:id", controllers.GetHotelByID) // cambiar nombre si no es hotel
+	router.GET("/activities/:id", controllers.GetActivityByID)
 
 	router.Run(":8080")
 }

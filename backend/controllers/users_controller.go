@@ -16,7 +16,7 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	userID, token, nombre, err := services.Login(request.Email, request.Password)
+	userID, token, name, err := services.Login(request.Email, request.Password)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Credenciales incorrectas"})
 		return
@@ -25,7 +25,7 @@ func Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{
 		"user_id": userID,
 		"token":   token,
-		"name":    nombre,
+		"name":    name,
 		"message": "201. Verificación realizada con éxito",
 	})
 }

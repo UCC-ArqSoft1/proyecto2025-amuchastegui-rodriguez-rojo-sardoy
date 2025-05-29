@@ -10,29 +10,32 @@ import (
 
 var Db *gorm.DB
 
-func GetActividadById(id int) model.Actividad {
-	var actividad model.Actividad
+func GetActivityByID(id int) (model.Activity, error) {
+	var activities model.Activity
 
-	Db.Where("id = ?", id).Preload("Categoria").First(&actividad)
-	log.Debug("Act: ", actividad)
+	result := clients.DB.Preload("Inscriptions").First(&activities, id)
+	if result.Error != nil {
+		log.Error("Error fetching activity: ", result.Error)
+		return model.Activity{}, result.Error
+	}
 
-	return actividad
+	return activities, nil
 }
 
-func GetAllActividades() ([]model.Actividad, error) {
-	var actividades []model.Actividad
-	result := clients.DB.Find(&actividades)
-	return actividades, result.Error
+func GetAllActivities() ([]model.Activity, error) {
+	var activities []model.Activity
+	result := clients.DB.Find(&activities)
+	return activities, result.Error
 }
 
-func CreateActividad(a *model.Actividad) error {
+func CreateActivity(a *model.Activity) error {
 	return clients.DB.Create(a).Error
 }
 
-func UpdateActividad(a *model.Actividad) error {
+func UpdateActivity(a *model.Activity) error {
 	return clients.DB.Save(a).Error
 }
 
-func DeleteActividad(id int) error {
-	return clients.DB.Delete(&model.Actividad{}, id).Error
+func DeleteActivity(id int) error {
+	return clients.DB.Delete(&model.Activity{}, id).Error
 }

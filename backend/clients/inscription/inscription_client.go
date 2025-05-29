@@ -9,12 +9,12 @@ import (
 
 var Db *gorm.DB
 
-func GetInscripcionesByUserID(userID int) ([]model.Inscripcion, error) {
-	var inscripciones []model.Inscripcion
-	result := clients.DB.Where("usuario_id = ?", userID).Find(&inscripciones)
-	return inscripciones, result.Error
+func GetInscriptionsByUserID(userID int) ([]model.Inscription, error) {
+	var inscriptions []model.Inscription
+	result := clients.DB.Where("user_id = ?", userID).Find(&inscriptions)
+	return inscriptions, result.Error
 }
 
-func CreateInscripcion(i *model.Inscripcion) error {
+func CreateInscription(i *model.Inscription) error {
 	return clients.DB.Create(i).Error
 }

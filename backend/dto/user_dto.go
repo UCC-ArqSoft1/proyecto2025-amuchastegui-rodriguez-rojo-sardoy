@@ -1,13 +1,13 @@
-package domain
+package dto
 
-type Usuario struct {
-	ID       int    `json:"id"`
-	Nombre   string `json:"nombre"`
-	Apellido string `json:"apellido"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Rol      string `json:"rol"`      // "socio" o "admin"
-	Telefono int    `json:"telefono"` // Opcional
+type User struct {
+	ID        int    `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Role      string `json:"role"`  // "member" or "admin"
+	Phone     int    `json:"phone"` // Optional
 }
 
 type LoginRequest struct {

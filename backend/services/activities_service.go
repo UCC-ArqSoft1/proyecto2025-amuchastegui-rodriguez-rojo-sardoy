@@ -1,34 +1,37 @@
 package services
 
 import (
+	"backend/clients/activity"
 	"backend/dto"
 )
 
-func GetActividadByID(id int) (Actividad, error) {
-	activity, err := GetActividadByID(id)
+func GetActivityByID(id int) (dto.Activity, error) {
+	dbActivity, err := activity.GetActivityByID(id)
 	if err != nil {
-		return dto.Actividad{}, err
+		return dto.Activity{}, err
 	}
 
-	var insDtos []dto.InscriptionDto
-
-	for _, ins := range activity.Inscriptions {
-		insDtos = append(insDtos, dto.InscriptionDto{
-			ID:              ins.ID,
-			UserID:          ins.UserID,
-			ActivityID:      ins.ActivityID,
-			DateInscription: ins.DateInscription,
-			Active:          ins.Active,
+	var inscriptionDTOs []dto.Inscription
+	for _, ins := range dbActivity.Inscriptions {
+		inscriptionDTOs = append(inscriptionDTOs, dto.Inscription{
+			ID:               ins.ID,
+			UserID:           ins.UserID,
+			ActivityID:       ins.ActivityID,
+			RegistrationDate: ins.RegistrationDate,
 		})
 	}
 
-	activityDto := dto.Actividad{
-		ID:           activity.ID,
-		Name:         activity.Name,
-		Description:  activity.Description,
-		Inscriptions: insDtos,
-		// agrega otros campos necesarios aquí
+	activityDTO := dto.Activity{
+		ID:           dbActivity.ID,
+		Name:         dbActivity.Name,
+		Description:  dbActivity.Description,
+		Category:     dbActivity.Category,
+		Date:         dbActivity.Date,
+		Duration:     dbActivity.Duration,
+		Quota:        dbActivity.Quota,
+		Profesor:     dbActivity.Profesor,
+		Inscriptions: inscriptionDTOs,
 	}
 
-	return activityDto, nil
+	return activityDTO, nil
 }

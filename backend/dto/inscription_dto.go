@@ -1,20 +1,20 @@
-package domain
+package dto
 
 type Inscription struct {
 	ID               int    `json:"id"`
-	UsuarioID        int    `json:"usuario_id"`
-	ActividadID      int    `json:"actividad_id"`
-	FechaInscripcion string `json:"fecha_inscripcion"`
+	UserID           int    `json:"user_id"`
+	ActivityID       int    `json:"activity_id"`
+	RegistrationDate string `json:"registration_date"`
 }
 
 type InscriptionRequest struct {
-	UsuarioID   int `json:"usuario_id"`
-	ActividadID int `json:"actividad_id"`
+	UserID     int `json:"user_id"`
+	ActivityID int `json:"activity_id"`
 }
 
 type InscriptionResponse struct {
 	InscriptionID    int    `json:"inscription_id"`
-	UsuarioID        int    `json:"usuario_id"`
-	ActividadID      int    `json:"actividad_id"`
-	FechaInscripcion string `json:"fecha_inscripcion"`
+	UserID           int    `json:"user_id"`
+	ActivityID       int    `json:"activity_id"`
+	RegistrationDate string `json:"registration_date"`
 }

@@ -7,18 +7,17 @@ import (
 	"backend/utils"
 )
 
-func Login(username string, password string) (int, string, error) {
+func Login(username string, password string) (int, string, string, error) {
 	userDAO, err := clients.GetUserByUsername(username)
 	if err != nil {
-		return 0, "", fmt.Errorf("error getting user: %w", err)
+		return 0, "", "", fmt.Errorf("error getting user: %w", err)
 	}
 	if utils.HashSHA256(password) != userDAO.PasswordHash {
-		return 0, "", fmt.Errorf("invalid password")
+		return 0, "", "", fmt.Errorf("invalid password")
 	}
 	token, err := utils.GenerateJWT(userDAO.ID)
 	if err != nil {
-		return 0, "", fmt.Errorf("error generating token: %w", err)
+		return 0, "", "", fmt.Errorf("error generating token: %w", err)
 	}
-	return userDAO.ID, token, nil
-
+	return userDAO.ID, token, userDAO.Username, nil
 }
