@@ -2,11 +2,11 @@ package domain
 
 type Actividad struct {
 	ID          int    `json:"id"`
-	Nombre      string `json:"nombre"`
-	Descripcion string `json:"descripcion"`
-	Categoria   string `json:"categoria"`
-	Dia         string `json:"dia"`      // formato: "dd/mm/yyyy"
-	Duracion    int    `json:"duracion"` // en minutos
-	Cupo        int    `json:"cupo"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+	Date        string `json:"date"`     // formato: "dd/mm/yyyy"
+	Duration    int    `json:"duration"` // en minutos
+	Quota       int    `json:"quota"`
 	Profesor    string `json:"profesor"`
 }

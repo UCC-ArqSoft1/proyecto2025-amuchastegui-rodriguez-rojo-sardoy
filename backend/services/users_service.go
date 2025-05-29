@@ -20,4 +20,5 @@ func Login(username string, password string) (int, string, error) {
 		return 0, "", fmt.Errorf("error generating token: %w", err)
 	}
 	return userDAO.ID, token, nil
+
 }

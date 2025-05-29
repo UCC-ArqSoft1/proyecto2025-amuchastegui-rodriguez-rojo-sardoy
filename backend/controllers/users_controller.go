@@ -3,27 +3,29 @@ package controllers
 import (
 	"net/http"
 
-	"backend/domain"
+	"backend/dto"
 	"backend/services"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Login(ctx *gin.Context) {
-	var request domain.User
+	var request dto.LoginRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Formato de datos inválido"})
 		return
 	}
 
-	userID, token, err := services.Login(request.Username, request.Password)
+	userID, token, nombre, err := services.Login(request.Email, request.Password)
 	if err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Credenciales incorrectas"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(http.StatusCreated, gin.H{
 		"user_id": userID,
 		"token":   token,
+		"name":    nombre,
+		"message": "201. Verificación realizada con éxito",
 	})
 }

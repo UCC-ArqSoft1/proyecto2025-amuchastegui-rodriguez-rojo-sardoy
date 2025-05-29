@@ -1,4 +1,4 @@
-package controllers
+package app
 
 import (
 	"backend/utils"

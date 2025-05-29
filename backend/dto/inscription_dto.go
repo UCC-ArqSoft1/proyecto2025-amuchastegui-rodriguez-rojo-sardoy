@@ -5,7 +5,6 @@ type Inscription struct {
 	UsuarioID        int    `json:"usuario_id"`
 	ActividadID      int    `json:"actividad_id"`
 	FechaInscripcion string `json:"fecha_inscripcion"`
-	Active           bool   `json:"activa"`
 }
 
 type InscriptionRequest struct {
@@ -18,5 +17,4 @@ type InscriptionResponse struct {
 	UsuarioID        int    `json:"usuario_id"`
 	ActividadID      int    `json:"actividad_id"`
 	FechaInscripcion string `json:"fecha_inscripcion"`
-	Active           bool   `json:"activa"`
 }
