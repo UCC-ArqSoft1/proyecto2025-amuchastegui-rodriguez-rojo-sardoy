@@ -1,4 +1,4 @@
-package models
+package model
 
 type Inscripcion struct {
 	ID               int    `gorm:"primaryKey;autoIncrement"`

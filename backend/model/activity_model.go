@@ -1,4 +1,4 @@
-package models
+package model
 
 type Actividad struct {
 	ID          int    `gorm:"primaryKey;autoIncrement"`
