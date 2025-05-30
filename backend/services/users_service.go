@@ -3,12 +3,12 @@ package services
 import (
 	"fmt"
 
-	"backend/clients"
+	"backend/clients/user"
 	"backend/utils"
 )
 
 func Login(username string, password string) (int, string, string, error) {
-	userDAO, err := clients.GetUserByUsername(username)
+	userDAO, err := user.GetUserByUsername(username)
 	if err != nil {
 		return 0, "", "", fmt.Errorf("error getting user: %w", err)
 	}

@@ -1,20 +1,27 @@
 package inscription
 
 import (
-	"backend/clients"
+	"backend/db"
 	"backend/model"
-
-	"gorm.io/gorm"
 )
 
-var Db *gorm.DB
-
-func GetInscriptionsByUserID(userID int) ([]model.Inscription, error) {
-	var inscriptions []model.Inscription
-	result := clients.DB.Where("user_id = ?", userID).Find(&inscriptions)
-	return inscriptions, result.Error
+func GetInscriptionByID(id uint) (*model.Inscription, error) {
+	var inscription model.Inscription
+	result := db.DB.First(&inscription, id)
+	return &inscription, result.Error
 }
 
-func CreateInscription(i *model.Inscription) error {
-	return clients.DB.Create(i).Error
+func CreateInscription(inscription *model.Inscription) error {
+	result := db.DB.Create(inscription)
+	return result.Error
+}
+
+func UpdateInscription(inscription *model.Inscription) error {
+	result := db.DB.Save(inscription)
+	return result.Error
+}
+
+func DeleteInscription(id uint) error {
+	result := db.DB.Delete(&model.Inscription{}, id)
+	return result.Error
 }

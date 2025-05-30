@@ -7,7 +7,7 @@ import (
 )
 
 func GetActivityByID(id int) (dto.Activity, error) {
-	dbActivity, err := activity.GetActivityByID(id)
+	dbActivity, err := activity.GetActivityByID(uint(id))
 	if err != nil {
 		return dto.Activity{}, err
 	}
@@ -100,5 +100,5 @@ func UpdateActivity(id int, updatedData *model.Activity) (dto.Activity, error) {
 }
 
 func DeleteActivity(id int) error {
-	return activity.DeleteActivity(id)
+	return activity.DeleteActivity(uint(id))
 }

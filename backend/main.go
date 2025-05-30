@@ -2,12 +2,14 @@ package main
 
 import (
 	"backend/controllers"
+	"backend/db"
 	"backend/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	db.InitDB()
 	router := gin.New()
 
 	router.Use(utils.CORS)

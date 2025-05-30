@@ -1,41 +1,33 @@
 package activity
 
 import (
-	"backend/clients"
+	"backend/db"
 	"backend/model"
-
-	log "github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 )
 
-var Db *gorm.DB
-
-func GetActivityByID(id int) (model.Activity, error) {
-	var activities model.Activity
-
-	result := clients.DB.Preload("Inscriptions").First(&activities, id)
-	if result.Error != nil {
-		log.Error("Error fetching activity: ", result.Error)
-		return model.Activity{}, result.Error
-	}
-
-	return activities, nil
+func GetActivityByID(id uint) (*model.Activity, error) {
+	var activity model.Activity
+	result := db.DB.First(&activity, id)
+	return &activity, result.Error
 }
 
 func GetAllActivities() ([]model.Activity, error) {
 	var activities []model.Activity
-	result := clients.DB.Find(&activities)
+	result := db.DB.Find(&activities)
 	return activities, result.Error
 }
 
-func CreateActivity(a *model.Activity) error {
-	return clients.DB.Create(a).Error
+func CreateActivity(activity *model.Activity) error {
+	result := db.DB.Create(activity)
+	return result.Error
 }
 
-func UpdateActivity(a *model.Activity) error {
-	return clients.DB.Save(a).Error
+func UpdateActivity(activity *model.Activity) error {
+	result := db.DB.Save(activity)
+	return result.Error
 }
 
-func DeleteActivity(id int) error {
-	return clients.DB.Delete(&model.Activity{}, id).Error
+func DeleteActivity(id uint) error {
+	result := db.DB.Delete(&model.Activity{}, id)
+	return result.Error
 }
