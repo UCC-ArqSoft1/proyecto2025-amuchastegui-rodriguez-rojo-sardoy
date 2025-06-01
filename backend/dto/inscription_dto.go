@@ -18,3 +18,8 @@ type InscriptionResponse struct {
 	ActivityID       int    `json:"activity_id"`
 	RegistrationDate string `json:"registration_date"`
 }
+
+type RegisterInscriptionRequest struct {
+	UsuarioID   int `json:"usuario_id"`
+	ActividadID int `json:"actividad_id"`
+}

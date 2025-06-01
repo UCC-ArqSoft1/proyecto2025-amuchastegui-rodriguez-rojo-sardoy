@@ -16,6 +16,7 @@ func main() {
 
 	router.POST("/users/login", controllers.Login)
 	router.GET("/activities/:id", controllers.GetActivityByID)
+	router.POST("/inscripciones", controllers.RegisterInscription)
 
 	router.Run(":8080")
 }
