@@ -4,8 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"backend/db"
 	"backend/dto"
+	"backend/model"
 	"backend/services"
+	"backend/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -72,4 +75,35 @@ func GetUserActivities(c *gin.Context) {
 
 	// 3. Responder con JSON
 	c.JSON(http.StatusOK, activities)
+}
+
+func RegisterUser(ctx *gin.Context) {
+	var req dto.RegisterRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
+		return
+	}
+
+	// Verificamos que no exista un usuario con ese email
+	var existing model.User
+	if err := db.DB.Where("email = ?", req.Email).First(&existing).Error; err == nil {
+		ctx.JSON(http.StatusConflict, gin.H{"error": "El usuario ya existe"})
+		return
+	}
+
+	user := model.User{
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+		Email:     req.Email,
+		Password:  utils.HashSHA256(req.Password),
+		Role:      "socio", // Por defecto
+	}
+
+	if err := db.DB.Create(&user).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo crear el usuario"})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Usuario registrado con éxito"})
 }

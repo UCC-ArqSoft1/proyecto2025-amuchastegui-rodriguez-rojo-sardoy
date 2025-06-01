@@ -12,6 +12,8 @@ func RegisterRoutes(router *gin.Engine) {
 
 	// Login
 	router.POST("/login", controllers.Login)
+	// Register
+	router.POST("/register", controllers.RegisterUser)
 
 	// Usuario
 	router.GET("/usuario", controllers.GetUserByID)
@@ -27,4 +29,5 @@ func RegisterRoutes(router *gin.Engine) {
 	// Inscripciones
 	router.POST("/inscripciones", controllers.RegisterInscription)
 	router.GET("/mis-actividades", controllers.GetMyActivities)
+
 }

@@ -31,22 +31,6 @@ func InitDB() {
 		log.Fatal("No se pudo conectar a la base de datos:", err)
 	}
 
+	// Migrar las tablas automáticamente si no existen
 	DB.AutoMigrate(&model.User{}, &model.Activity{}, &model.Inscription{})
-	var count int64
-	DB.Model(&model.User{}).Where("email = ?", "admin@gym.com").Count(&count)
-
-	if count == 0 {
-		admin := model.User{
-			FirstName: "Admin",
-			LastName:  "Test",
-			Email:     "admin@gym.com",
-			Password:  "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
-			Role:      "admin",
-		}
-		if err := DB.Create(&admin).Error; err != nil {
-			log.Println("Error creando usuario admin:", err)
-		} else {
-			log.Println("✔️ Usuario admin creado")
-		}
-	}
 }

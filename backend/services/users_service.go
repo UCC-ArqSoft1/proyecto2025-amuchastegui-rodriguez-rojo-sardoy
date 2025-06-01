@@ -6,6 +6,7 @@ import (
 	"backend/dto"
 	"backend/model"
 	"backend/utils"
+	"errors"
 	"fmt"
 )
 
@@ -27,6 +28,30 @@ func Login(email string, password string) (int, string, string, error) {
 
 	fullName := user.FirstName + " " + user.LastName
 	return user.ID, token, fullName, nil
+}
+
+// RegisterUser crea un nuevo usuario si el email no está en uso
+func RegisterUser(req dto.RegisterRequest) error {
+	// Verificamos si ya existe un usuario con ese email
+	var existing model.User
+	if err := db.DB.Where("email = ?", req.Email).First(&existing).Error; err == nil {
+		return errors.New("el usuario ya existe")
+	}
+
+	// Crear el nuevo usuario con rol "socio" por defecto
+	user := model.User{
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+		Email:     req.Email,
+		Password:  utils.HashSHA256(req.Password),
+		Role:      "socio",
+	}
+
+	// Guardar el nuevo usuario en la base de datos
+	if err := db.DB.Create(&user).Error; err != nil {
+		return errors.New("no se pudo crear el usuario")
+	}
+	return nil
 }
 
 func GetUserByID(userID int) (model.User, error) {
