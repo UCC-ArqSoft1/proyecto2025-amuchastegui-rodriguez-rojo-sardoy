@@ -9,14 +9,33 @@ import (
 )
 
 func main() {
+	// Inicializar base de datos (ya carga el .env)
 	db.InitDB()
-	router := gin.New()
 
+	// Crear router
+	router := gin.Default()
+
+	// Middleware CORS
 	router.Use(utils.CORS)
 
-	router.POST("/users/login", controllers.Login)
-	router.GET("/activities/:id", controllers.GetActivityByID)
-	router.POST("/inscripciones", controllers.RegisterInscription)
+	// Rutas del sistema
+	router.POST("/login", controllers.Login)
 
+	// Usuarios
+	router.GET("/usuario", controllers.GetUserByID)
+	router.GET("/usuario/:id/actividades", controllers.GetUserActivities)
+
+	// Actividades
+	router.GET("/actividades", controllers.GetAllActivities)
+	router.GET("/actividades/:id", controllers.GetActivityByID)
+	router.POST("/actividades", controllers.CreateActivity)
+	router.PUT("/actividades/:id", controllers.UpdateActivity)
+	router.DELETE("/actividades/:id", controllers.DeleteActivity)
+
+	// Inscripciones
+	router.POST("/inscripciones", controllers.RegisterInscription)
+	router.GET("/mis-actividades", controllers.GetMyActivities)
+
+	// Iniciar servidor
 	router.Run(":8080")
 }
