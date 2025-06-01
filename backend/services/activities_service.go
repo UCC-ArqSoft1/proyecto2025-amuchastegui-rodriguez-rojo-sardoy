@@ -62,20 +62,20 @@ func GetAllActivities() ([]dto.Activity, error) {
 }
 
 func CreateActivity(activityData *model.Activity) (dto.Activity, error) {
-	dbActivity, err := CreateActivity(activityData)
+	err := activity.CreateActivity(activityData)
 	if err != nil {
 		return dto.Activity{}, err
 	}
 
 	activityDTO := dto.Activity{
-		ID:          dbActivity.ID,
-		Name:        dbActivity.Name,
-		Description: dbActivity.Description,
-		Category:    dbActivity.Category,
-		Date:        dbActivity.Date,
-		Duration:    dbActivity.Duration,
-		Quota:       dbActivity.Quota,
-		Profesor:    dbActivity.Profesor,
+		ID:          activityData.ID,
+		Name:        activityData.Name,
+		Description: activityData.Description,
+		Category:    activityData.Category,
+		Date:        activityData.Date,
+		Duration:    activityData.Duration,
+		Quota:       activityData.Quota,
+		Profesor:    activityData.Profesor,
 	}
 	return activityDTO, nil
 }

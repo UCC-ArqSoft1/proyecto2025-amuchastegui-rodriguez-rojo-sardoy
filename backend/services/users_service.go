@@ -9,20 +9,20 @@ import (
 	"fmt"
 )
 
-func Login(username string, password string) (int, string, string, error) {
+func Login(email string, password string) (int, string, string, error) {
 	var user model.User
-	result := db.DB.First(&user, "username = ?", username)
+	result := db.DB.First(&user, "email = ?", email)
 	if result.Error != nil {
-		return 0, "", "", fmt.Errorf("error getting user: %w", result.Error)
+		return 0, "", "", fmt.Errorf("usuario no encontrado")
 	}
 
 	if utils.HashSHA256(password) != user.Password {
-		return 0, "", "", fmt.Errorf("invalid password")
+		return 0, "", "", fmt.Errorf("password inválido")
 	}
 
 	token, err := utils.GenerateJWT(user.ID)
 	if err != nil {
-		return 0, "", "", fmt.Errorf("error generating token: %w", err)
+		return 0, "", "", fmt.Errorf("error generando token: %w", err)
 	}
 
 	fullName := user.FirstName + " " + user.LastName
