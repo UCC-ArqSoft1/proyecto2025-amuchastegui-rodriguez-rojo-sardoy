@@ -26,9 +26,10 @@ type RegisterRequest struct {
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
-	Phone     int    `json:"phone"` // opcional
+	Phone     *int   `json:"phone"` // opcional
 	Role      string `json:"role"`  // opcional
 }
+
 type RegisterResponse struct {
 	Message string `json:"message"`
 	UserID  int    `json:"user_id"`
