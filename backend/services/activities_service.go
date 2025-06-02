@@ -81,20 +81,21 @@ func CreateActivity(activityData *model.Activity) (dto.Activity, error) {
 }
 
 func UpdateActivity(id int, updatedData *model.Activity) (dto.Activity, error) {
-	updated, err := UpdateActivity(id, updatedData)
+	updatedData.ID = id
+	err := activity.UpdateActivity(updatedData)
 	if err != nil {
 		return dto.Activity{}, err
 	}
 
 	activityDTO := dto.Activity{
-		ID:          updated.ID,
-		Name:        updated.Name,
-		Description: updated.Description,
-		Category:    updated.Category,
-		Date:        updated.Date,
-		Duration:    updated.Duration,
-		Quota:       updated.Quota,
-		Profesor:    updated.Profesor,
+		ID:          id,
+		Name:        updatedData.Name,
+		Description: updatedData.Description,
+		Category:    updatedData.Category,
+		Date:        updatedData.Date,
+		Duration:    updatedData.Duration,
+		Quota:       updatedData.Quota,
+		Profesor:    updatedData.Profesor,
 	}
 	return activityDTO, nil
 }
