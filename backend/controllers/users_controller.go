@@ -1,14 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
-	"backend/db"
 	"backend/dto"
-	"backend/model"
 	"backend/services"
-	"backend/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,10 +33,16 @@ func Login(ctx *gin.Context) {
 }
 
 func GetUserByID(ctx *gin.Context) {
-	idParam := ctx.Query("id")
-	userID, err := strconv.Atoi(idParam)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+	// Obtener el userID que el middleware puso en el context
+	idValue, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido o ausente"})
+		return
+	}
+
+	userID, ok := idValue.(int)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "ID de usuario inválido en token"})
 		return
 	}
 
@@ -85,25 +89,38 @@ func RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	// Verificamos que no exista un usuario con ese email
-	var existing model.User
-	if err := db.DB.Where("email = ?", req.Email).First(&existing).Error; err == nil {
-		ctx.JSON(http.StatusConflict, gin.H{"error": "El usuario ya existe"})
+	resp, err := services.RegisterUser(req)
+	if err != nil {
+		ctx.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
 	}
 
-	user := model.User{
-		FirstName: req.FirstName,
-		LastName:  req.LastName,
-		Email:     req.Email,
-		Password:  utils.HashSHA256(req.Password),
-		Role:      "socio", // Por defecto
-	}
+	ctx.JSON(http.StatusCreated, resp)
+}
 
-	if err := db.DB.Create(&user).Error; err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo crear el usuario"})
+func GetAuthenticatedUser(ctx *gin.Context) {
+	userIDStr, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "No autorizado"})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "Usuario registrado con éxito"})
+	userID, err := strconv.Atoi(fmt.Sprintf("%v", userIDStr))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+
+	user, err := services.GetUserByID(userID)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"id":    user.ID,
+		"name":  user.FirstName + " " + user.LastName,
+		"email": user.Email,
+		"role":  user.Role,
+	})
 }

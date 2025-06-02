@@ -16,8 +16,8 @@ func RegisterRoutes(router *gin.Engine) {
 	router.POST("/register", controllers.RegisterUser)
 
 	// Usuario
-	router.GET("/usuario", controllers.GetUserByID)
-	router.GET("/usuario/:id/actividades", controllers.GetUserActivities)
+	router.GET("/usuario", utils.AuthMiddleware(), controllers.GetAuthenticatedUser)
+	router.GET("/usuario/:id/actividades", utils.AuthMiddleware(), controllers.GetUserActivities)
 
 	// Actividades
 	router.GET("/actividades", controllers.GetAllActivities)

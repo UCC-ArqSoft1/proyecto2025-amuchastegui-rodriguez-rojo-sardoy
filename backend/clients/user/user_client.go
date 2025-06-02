@@ -7,6 +7,12 @@ import (
 	"gorm.io/gorm"
 )
 
+var Db *gorm.DB
+
+func SetDatabase(database *gorm.DB) {
+	Db = database
+}
+
 func GetUserByID(id uint) (*model.User, error) {
 	var user model.User
 	result := db.DB.First(&user, id)
@@ -14,8 +20,15 @@ func GetUserByID(id uint) (*model.User, error) {
 }
 
 func CreateUser(user *model.User) error {
-	result := db.DB.Create(user)
-	return result.Error
+	return Db.Create(user).Error
+}
+func GetUserByEmail(email string) (*model.User, error) {
+	var user model.User
+	err := Db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func GetUserByUsername(username string) (model.User, error) {

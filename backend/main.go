@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/app"
+	userClient "backend/clients/user"
 	"backend/db"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,7 @@ import (
 func main() {
 	// Iniciar base de datos
 	db.InitDB()
-
+	userClient.SetDatabase(db.DB)
 	// Crear router
 	router := gin.Default()
 
