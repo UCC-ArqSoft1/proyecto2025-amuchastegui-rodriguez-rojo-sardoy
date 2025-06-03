@@ -62,7 +62,6 @@ func GetUserByID(ctx *gin.Context) {
 }
 
 func GetUserActivities(c *gin.Context) {
-	// 1. Obtener el parámetro de la URL
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -70,14 +69,12 @@ func GetUserActivities(c *gin.Context) {
 		return
 	}
 
-	// 2. Llamar al servicio
 	activities, err := services.GetUserActivities(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al obtener actividades del usuario"})
 		return
 	}
 
-	// 3. Responder con JSON
 	c.JSON(http.StatusOK, activities)
 }
 

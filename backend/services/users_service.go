@@ -1,8 +1,7 @@
 package services
 
 import (
-	clients "backend/clients/user"
-	userClient "backend/clients/user"
+	userClient "backend/clients/user" // alias para evitar conflictos
 	"backend/db"
 	"backend/dto"
 	"backend/model"
@@ -11,6 +10,7 @@ import (
 	"fmt"
 )
 
+// Login realiza la autenticación del usuario y devuelve token
 func Login(email string, password string) (int, string, string, error) {
 	var user model.User
 	result := db.DB.First(&user, "email = ?", email)
@@ -23,7 +23,6 @@ func Login(email string, password string) (int, string, string, error) {
 	}
 
 	token, err := utils.GenerateJWT(user.ID, user.Role)
-
 	if err != nil {
 		return 0, "", "", fmt.Errorf("error generando token: %w", err)
 	}
@@ -32,9 +31,10 @@ func Login(email string, password string) (int, string, string, error) {
 	return user.ID, token, fullName, nil
 }
 
+// RegisterUser crea un nuevo usuario si el email no existe
 func RegisterUser(req dto.RegisterRequest) (dto.RegisterResponse, error) {
 	// Verificar que no exista el email
-	_, err := clients.GetUserByEmail(req.Email)
+	_, err := userClient.GetUserByEmail(req.Email)
 	if err == nil {
 		return dto.RegisterResponse{}, errors.New("el usuario ya existe")
 	}
@@ -47,7 +47,7 @@ func RegisterUser(req dto.RegisterRequest) (dto.RegisterResponse, error) {
 		Role:      "socio",
 	}
 
-	err = clients.CreateUser(&user)
+	err = userClient.CreateUser(&user)
 	if err != nil {
 		return dto.RegisterResponse{}, errors.New("error al crear el usuario")
 	}
@@ -58,6 +58,7 @@ func RegisterUser(req dto.RegisterRequest) (dto.RegisterResponse, error) {
 	}, nil
 }
 
+// GetUserByID devuelve el modelo de usuario según su ID
 func GetUserByID(userID int) (model.User, error) {
 	var user model.User
 	result := db.DB.First(&user, userID)
@@ -67,19 +68,16 @@ func GetUserByID(userID int) (model.User, error) {
 	return user, nil
 }
 
+// GetUserActivities devuelve todas las actividades a las que está inscrito un usuario
 func GetUserActivities(id int) ([]dto.Activity, error) {
-	if id < 0 {
-		return nil, fmt.Errorf("invalid user ID")
-	}
-
-	activityModel, err := userClient.GetUserActivities(id)
+	activityModels, err := userClient.GetUserActivities(uint(id))
 	if err != nil {
 		return nil, err
 	}
 
-	var actDto []dto.Activity
-	for _, act := range activityModel {
-		actDto = append(actDto, dto.Activity{
+	var activityDTOs []dto.Activity
+	for _, act := range activityModels {
+		activityDTOs = append(activityDTOs, dto.Activity{
 			ID:          act.ID,
 			Name:        act.Name,
 			Description: act.Description,
@@ -90,5 +88,6 @@ func GetUserActivities(id int) ([]dto.Activity, error) {
 			Profesor:    act.Profesor,
 		})
 	}
-	return actDto, nil
+
+	return activityDTOs, nil
 }

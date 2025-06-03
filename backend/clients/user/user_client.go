@@ -42,17 +42,16 @@ func DeleteUser(id uint) error {
 	return result.Error
 }
 
-// Obtener actividades de un usuario por ID (inscripciones + actividades)
-func GetUserActivities(userID int) ([]model.Activity, error) {
+func GetUserActivities(userID uint) ([]model.Activity, error) {
 	var user model.User
-	result := db.DB.Preload("Inscriptions.Activity").First(&user, userID)
-	if result.Error != nil {
-		return nil, result.Error
+
+	if err := db.DB.Preload("Inscriptions.Activity").First(&user, userID).Error; err != nil {
+		return nil, err
 	}
 
 	var activities []model.Activity
-	for _, ins := range user.Inscriptions {
-		activities = append(activities, ins.Activity)
+	for _, insc := range user.Inscriptions {
+		activities = append(activities, insc.Activity)
 	}
 
 	return activities, nil
