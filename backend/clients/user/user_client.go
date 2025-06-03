@@ -42,22 +42,17 @@ func DeleteUser(id uint) error {
 	return result.Error
 }
 
-func GetUserActivities(userID uint) ([]model.Activity, error) {
+// Obtener actividades de un usuario por ID (inscripciones + actividades)
+func GetUserActivities(userID int) ([]model.Activity, error) {
 	var user model.User
-
-	// Preload el nombre correcto del campo: Inscriptions
 	result := db.DB.Preload("Inscriptions.Activity").First(&user, userID)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
 	var activities []model.Activity
-	for _, insc := range user.Inscriptions {
-		activities = append(activities, insc.Activity)
-	}
-
-	if len(activities) == 0 {
-		return nil, gorm.ErrRecordNotFound
+	for _, ins := range user.Inscriptions {
+		activities = append(activities, ins.Activity)
 	}
 
 	return activities, nil

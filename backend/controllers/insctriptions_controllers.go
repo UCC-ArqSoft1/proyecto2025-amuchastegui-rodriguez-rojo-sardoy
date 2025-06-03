@@ -4,43 +4,37 @@ import (
 	"backend/dto"
 	"backend/services"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterInscription(ctx *gin.Context) {
-	var request dto.RegisterInscriptionRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Formato de datos inválido"})
+func RegisterInscription(c *gin.Context) {
+	// 1. Obtener userID desde el contexto (ya es int)
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
 		return
 	}
 
-	err := services.RegisterInscription(request.UsuarioID, request.ActividadID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	userID, ok := userIDValue.(int)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al leer userID del token"})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "Inscripción realizada con éxito"})
-}
-
-func GetMyActivities(ctx *gin.Context) {
-	userIDStr := ctx.Query("user_id")
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil || userID <= 0 {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user_id"})
+	// 2. Bind del JSON de la request
+	var input dto.RegisterInscriptionRequest
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON inválido", "details": err.Error()})
 		return
 	}
 
-	activities, err := services.GetActivitiesByUser(userID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch activities"})
+	// 3. Llamar al servicio
+	if err := services.RegisterInscription(userID, input); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message":    "User activities retrieved successfully",
-		"activities": activities,
-	})
+	// 4. Éxito
+	c.JSON(http.StatusCreated, gin.H{"message": "Inscripción registrada con éxito"})
 }

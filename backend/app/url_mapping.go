@@ -11,23 +11,22 @@ func RegisterRoutes(router *gin.Engine) {
 	router.Use(utils.CORS)
 
 	// Login
-	router.POST("/login", controllers.Login)
+	router.POST("/login", controllers.Login) //anda
 	// Register
-	router.POST("/register", controllers.RegisterUser)
+	router.POST("/register", controllers.RegisterUser) //anda
 
 	// Usuario
-	router.GET("/usuario", utils.AuthMiddleware(), controllers.GetAuthenticatedUser)
+	router.GET("/usuario", utils.AuthMiddleware(), controllers.GetAuthenticatedUser) //anda
 	router.GET("/usuario/:id/actividades", utils.AuthMiddleware(), controllers.GetUserActivities)
 
 	// Actividades
-	router.GET("/actividades", controllers.GetAllActivities)
-	router.GET("/actividades/:id", controllers.GetActivityByID)
-	router.POST("/actividades", controllers.CreateActivity)
+	router.GET("/actividades", controllers.GetAllActivities)    //anda
+	router.GET("/actividades/:id", controllers.GetActivityByID) //anda
+	router.POST("/actividades", controllers.CreateActivity)     //anda
 	router.PUT("/actividades/:id", controllers.UpdateActivity)
 	router.DELETE("/actividades/:id", controllers.DeleteActivity)
 
 	// Inscripciones
-	router.POST("/inscripciones", controllers.RegisterInscription)
-	router.GET("/mis-actividades", controllers.GetMyActivities)
+	router.POST("/inscripciones", utils.AuthMiddleware(), controllers.RegisterInscription) //anda
 
 }

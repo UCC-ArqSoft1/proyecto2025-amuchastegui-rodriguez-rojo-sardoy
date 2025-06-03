@@ -23,15 +23,14 @@ func GetActivityByID(id int) (dto.Activity, error) {
 	}
 
 	activityDTO := dto.Activity{
-		ID:           dbActivity.ID,
-		Name:         dbActivity.Name,
-		Description:  dbActivity.Description,
-		Category:     dbActivity.Category,
-		Date:         dbActivity.Date,
-		Duration:     dbActivity.Duration,
-		Quota:        dbActivity.Quota,
-		Profesor:     dbActivity.Profesor,
-		Inscriptions: inscriptionDTOs,
+		ID:          dbActivity.ID,
+		Name:        dbActivity.Name,
+		Description: dbActivity.Description,
+		Category:    dbActivity.Category,
+		Date:        dbActivity.Date,
+		Duration:    dbActivity.Duration,
+		Quota:       dbActivity.Quota,
+		Profesor:    dbActivity.Profesor,
 	}
 
 	return activityDTO, nil

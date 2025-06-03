@@ -68,26 +68,16 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 
-		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("método de firma inesperado")
-			}
-			return []byte(jwtSecret), nil
-		})
-
-		if err != nil || !token.Valid {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
+		claims, err := ValidateJWT(tokenStr)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
 
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "No se pudieron leer los claims"})
-			return
-		}
+		// Guardar el userID y el rol en el contexto
+		c.Set("userID", claims.UserID)
+		c.Set("role", claims.Role)
 
-		userID := claims["jti"]
-		c.Set("userID", userID)
 		c.Next()
 	}
 }

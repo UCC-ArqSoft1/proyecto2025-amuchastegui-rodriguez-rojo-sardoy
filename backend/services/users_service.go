@@ -68,7 +68,11 @@ func GetUserByID(userID int) (model.User, error) {
 }
 
 func GetUserActivities(id int) ([]dto.Activity, error) {
-	activityModel, err := userClient.GetUserActivities(uint(id))
+	if id < 0 {
+		return nil, fmt.Errorf("invalid user ID")
+	}
+
+	activityModel, err := userClient.GetUserActivities(id)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +88,6 @@ func GetUserActivities(id int) ([]dto.Activity, error) {
 			Duration:    act.Duration,
 			Quota:       act.Quota,
 			Profesor:    act.Profesor,
-			// Inscriptions: nil // Solo si realmente querés incluirlas, y necesitas mapearlas también
 		})
 	}
 	return actDto, nil
