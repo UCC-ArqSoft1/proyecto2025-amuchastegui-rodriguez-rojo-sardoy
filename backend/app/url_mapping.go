@@ -16,17 +16,16 @@ func RegisterRoutes(router *gin.Engine) {
 	router.POST("/register", controllers.RegisterUser) //anda
 
 	// Usuario
-	router.GET("/usuario", utils.AuthMiddleware(), controllers.GetAuthenticatedUser)              //anda
-	router.GET("/usuario/:id/actividades", utils.AuthMiddleware(), controllers.GetUserActivities) //anda
+	router.GET("/usuario", utils.AuthMiddleware(), controllers.GetAuthenticatedUser)              //probar
+	router.GET("/usuario/:id/actividades", utils.AuthMiddleware(), controllers.GetUserActivities) //probar
 
 	// Actividades
-	router.GET("/actividades", controllers.GetAllActivities)    //anda
-	router.GET("/actividades/:id", controllers.GetActivityByID) //anda
-	router.POST("/actividades", controllers.CreateActivity)     //anda
-	router.PUT("/actividades/:id", controllers.UpdateActivity)
-	router.DELETE("/actividades/:id", controllers.DeleteActivity)
+	router.GET("/actividades", controllers.GetAllActivities)      //probar
+	router.GET("/actividades/:id", controllers.GetActivityByID)   //probar
+	router.POST("/actividades", controllers.CreateActivity)       //probar
+	router.PUT("/actividades/:id", controllers.UpdateActivity)    //probar
+	router.DELETE("/actividades/:id", controllers.DeleteActivity) //probar
 
 	// Inscripciones
-	router.POST("/inscripciones", utils.AuthMiddleware(), controllers.RegisterInscription) //anda
-
+	router.POST("/inscripciones", utils.AuthMiddleware(), controllers.RegisterInscription) //probar
 }

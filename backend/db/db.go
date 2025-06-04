@@ -2,11 +2,10 @@ package db
 
 import (
 	"backend/model"
-	"fmt"
 	"log"
 	"os"
+	"time"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -14,23 +13,26 @@ import (
 var DB *gorm.DB
 
 func InitDB() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error cargando archivo .env")
+	dsn := os.Getenv("DB_DSN")
+	if dsn == "" {
+		log.Fatal("La variable de entorno DB_DSN no está definida")
 	}
 
-	user := os.Getenv("DB_USER")
-	pass := os.Getenv("DB_PASSWORD")
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	name := os.Getenv("DB_NAME")
+	var err error
+	for i := 0; i < 10; i++ {
+		DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		if err == nil {
+			break
+		}
+		log.Printf("Intento %d: error al conectar a la base de datos: %v", i+1, err)
+		time.Sleep(3 * time.Second)
+	}
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, pass, host, port, name)
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("No se pudo conectar a la base de datos:", err)
 	}
 
-	// Migrar las tablas automáticamente si no existen
-	DB.AutoMigrate(&model.User{}, &model.Activity{}, &model.Inscription{})
+	if err := DB.AutoMigrate(&model.User{}, &model.Activity{}, &model.Inscription{}); err != nil {
+		log.Fatal("Error migrando la base de datos:", err)
+	}
 }

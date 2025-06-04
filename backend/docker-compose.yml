@@ -1,0 +1,26 @@
+services:
+  mysql:
+    image: mysql:9.3
+    restart: always
+    container_name: gym_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 250498La
+      MYSQL_DATABASE: GYM
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build: .
+    container_name: gym_backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      DB_DSN: root:250498La@tcp(mysql:3306)/GYM?parseTime=true
+    restart: always
+
+volumes:
+  mysql_data:
