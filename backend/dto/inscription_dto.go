@@ -9,3 +9,10 @@ type Inscription struct {
 	ActivityID       int    `json:"activity_id"`
 	RegistrationDate string `json:"registration_date"`
 }
+
+type ActivityInscription struct {
+	ActivityID int    `json:"activity_id"`
+	Title      string `json:"title"`
+	Day        string `json:"day"`
+	Instructor string `json:"instructor"`
+}

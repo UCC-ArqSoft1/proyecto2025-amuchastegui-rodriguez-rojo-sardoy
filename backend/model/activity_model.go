@@ -9,5 +9,5 @@ type Activity struct {
 	Duration     int           `gorm:"not null" json:"duration"`
 	Quota        int           `gorm:"not null" json:"quota"`
 	Profesor     string        `gorm:"type:varchar(100);not null" json:"profesor"`
-	Inscriptions []Inscription `json:"inscriptions,omitempty"`
+	Inscriptions []Inscription `gorm:"foreignKey:ActivityID;constraint:OnDelete:CASCADE;" json:"inscriptions,omitempty"`
 }

@@ -11,21 +11,22 @@ func RegisterRoutes(router *gin.Engine) {
 	router.Use(utils.CORS)
 
 	// Login
-	router.POST("/login", controllers.Login) //anda
+	router.POST("/login", controllers.Login)
 	// Register
-	router.POST("/register", controllers.RegisterUser) //anda
+	router.POST("/register", controllers.RegisterUser)
 
 	// Usuario
-	router.GET("/usuario", utils.AuthMiddleware(), controllers.GetAuthenticatedUser)              //probar
-	router.GET("/usuario/:id/actividades", utils.AuthMiddleware(), controllers.GetUserActivities) //probar
+	router.GET("/usuario", utils.AuthMiddleware(), controllers.GetAuthenticatedUser)
+	router.GET("/usuario/:id/actividades", utils.AuthMiddleware(), controllers.GetUserActivities)
 
 	// Actividades
-	router.GET("/actividades", controllers.GetAllActivities)      //probar
-	router.GET("/actividades/:id", controllers.GetActivityByID)   //probar
-	router.POST("/actividades", controllers.CreateActivity)       //probar
-	router.PUT("/actividades/:id", controllers.UpdateActivity)    //probar
-	router.DELETE("/actividades/:id", controllers.DeleteActivity) //probar
-
+	router.GET("/actividades", controllers.GetAllActivities)
+	router.GET("/actividades/:id", controllers.GetActivityByID)
+	router.POST("/actividades", controllers.CreateActivity)    //hacer acceso solo admin
+	router.PUT("/actividades/:id", controllers.UpdateActivity) //hacer acceso solo admin
+	router.DELETE("/actividades/:id", controllers.DeleteActivity)
 	// Inscripciones
-	router.POST("/inscripciones", utils.AuthMiddleware(), controllers.RegisterInscription) //probar
+	router.POST("/inscripciones", utils.AuthMiddleware(), controllers.RegisterInscription)
+	router.GET("/my-activities", utils.AuthMiddleware(), controllers.GetMyActivities)
+
 }

@@ -38,3 +38,28 @@ func RegisterInscription(c *gin.Context) {
 	// 4. Éxito
 	c.JSON(http.StatusCreated, gin.H{"message": "Inscripción registrada con éxito"})
 }
+
+func GetMyActivities(ctx *gin.Context) {
+	userIDRaw, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or missing token"})
+		return
+	}
+
+	userID, ok := userIDRaw.(int)
+	if !ok {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	activities, err := services.GetMyActivities(userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "4xx. Failed to fetch enrolled activities"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":    "Successfully retrieved enrolled activities",
+		"activities": activities,
+	})
+}

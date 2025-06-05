@@ -25,3 +25,22 @@ func RegisterInscription(userID int, input dto.RegisterInscriptionRequest) error
 
 	return nil
 }
+
+func GetMyActivities(userID int) ([]dto.ActivityInscription, error) {
+	activities, err := inscription.GetInscriptionsByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []dto.ActivityInscription
+	for _, act := range activities {
+		result = append(result, dto.ActivityInscription{
+			ActivityID: act.ID,
+			Title:      act.Name,
+			Day:        act.Date,
+			Instructor: act.Profesor,
+		})
+	}
+
+	return result, nil
+}
