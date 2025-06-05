@@ -2,6 +2,7 @@ package db
 
 import (
 	"backend/model"
+	"backend/utils"
 	"log"
 	"os"
 	"time"
@@ -34,5 +35,28 @@ func InitDB() {
 
 	if err := DB.AutoMigrate(&model.User{}, &model.Activity{}, &model.Inscription{}); err != nil {
 		log.Fatal("Error migrando la base de datos:", err)
+	}
+
+	admins := []model.User{
+		{FirstName: "Admin", LastName: "General", Email: "admin@admin.com", Password: utils.HashSHA256("12345"), Role: "admin"},
+		{FirstName: "Vice", LastName: "Admin", Email: "vice@admin.com", Password: utils.HashSHA256("12345"), Role: "admin"},
+		{FirstName: "Test", LastName: "Admin", Email: "test@admin.com", Password: utils.HashSHA256("12345"), Role: "admin"},
+	}
+
+	for _, a := range admins {
+		var count int64
+		if err := DB.Model(&model.User{}).Where("email = ?", a.Email).Count(&count).Error; err != nil {
+			log.Printf("Error verificando existencia de admin %s: %v", a.Email, err)
+			continue
+		}
+		if count == 0 {
+			if err := DB.Create(&a).Error; err != nil {
+				log.Printf("Error creando admin %s: %v", a.Email, err)
+			} else {
+				log.Printf("✅ Usuario admin creado: %s", a.Email)
+			}
+		} else {
+			log.Printf("ℹ️ Usuario admin ya existe: %s", a.Email)
+		}
 	}
 }
