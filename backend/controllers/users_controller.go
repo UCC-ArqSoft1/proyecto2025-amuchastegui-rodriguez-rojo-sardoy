@@ -62,6 +62,15 @@ func GetUserByID(ctx *gin.Context) {
 }
 
 func GetUserActivities(c *gin.Context) {
+	// Validar rol
+	roleRaw, exists := c.Get("role")
+	role, ok := roleRaw.(string)
+	if !exists || !ok || role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Solo administradores pueden acceder a actividades de otros usuarios"})
+		return
+	}
+
+	// Continuar si es admin
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {

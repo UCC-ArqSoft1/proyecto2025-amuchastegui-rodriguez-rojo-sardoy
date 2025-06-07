@@ -2,8 +2,10 @@ package services
 
 import (
 	"backend/clients/activity"
+	"backend/db"
 	"backend/dto"
 	"backend/model"
+	"fmt"
 )
 
 func GetActivityByID(id int) (dto.Activity, error) {
@@ -62,7 +64,16 @@ func GetAllActivities() ([]dto.Activity, error) {
 }
 
 func CreateActivity(activityData *model.Activity) (dto.Activity, error) {
-	err := activity.CreateActivity(activityData)
+	// Validar que no exista una actividad igual
+	var existing model.Activity
+	err := db.DB.
+		Where("name = ? AND date = ? AND profesor = ?", activityData.Name, activityData.Date, activityData.Profesor).
+		First(&existing).Error
+	if err == nil {
+		return dto.Activity{}, fmt.Errorf("ya existe una actividad con el mismo nombre, fecha y profesor")
+	}
+
+	err = activity.CreateActivity(activityData)
 	if err != nil {
 		return dto.Activity{}, err
 	}

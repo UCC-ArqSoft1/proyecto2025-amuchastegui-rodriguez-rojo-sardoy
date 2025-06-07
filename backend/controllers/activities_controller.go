@@ -35,6 +35,13 @@ func GetAllActivities(ctx *gin.Context) {
 }
 
 func CreateActivity(ctx *gin.Context) {
+	roleRaw, exists := ctx.Get("role")
+	role, ok := roleRaw.(string)
+	if !exists || !ok || role != "admin" {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "Only admins can create activities"})
+		return
+	}
+
 	var newActivity model.Activity
 	if err := ctx.ShouldBindJSON(&newActivity); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
@@ -50,6 +57,13 @@ func CreateActivity(ctx *gin.Context) {
 }
 
 func UpdateActivity(ctx *gin.Context) {
+	roleRaw, exists := ctx.Get("role")
+	role, ok := roleRaw.(string)
+	if !exists || !ok || role != "admin" {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "Only admins can update activities"})
+		return
+	}
+
 	id := ctx.Param("id")
 	activityID, err := strconv.Atoi(id)
 	if err != nil {
@@ -72,6 +86,13 @@ func UpdateActivity(ctx *gin.Context) {
 }
 
 func DeleteActivity(ctx *gin.Context) {
+	roleRaw, exists := ctx.Get("role")
+	role, ok := roleRaw.(string)
+	if !exists || !ok || role != "admin" {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "Only admins can delete activities"})
+		return
+	}
+
 	id := ctx.Param("id")
 	activityID, err := strconv.Atoi(id)
 	if err != nil {

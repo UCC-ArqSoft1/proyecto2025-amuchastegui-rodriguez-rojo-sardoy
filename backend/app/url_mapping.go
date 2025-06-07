@@ -22,9 +22,9 @@ func RegisterRoutes(router *gin.Engine) {
 	// Actividades
 	router.GET("/actividades", controllers.GetAllActivities)
 	router.GET("/actividades/:id", controllers.GetActivityByID)
-	router.POST("/actividades", controllers.CreateActivity)    //hacer acceso solo admin
-	router.PUT("/actividades/:id", controllers.UpdateActivity) //hacer acceso solo admin
-	router.DELETE("/actividades/:id", controllers.DeleteActivity)
+	router.POST("/actividades", utils.AuthMiddleware(), controllers.CreateActivity)
+	router.PUT("/actividades/:id", utils.AuthMiddleware(), controllers.UpdateActivity)
+	router.DELETE("/actividades/:id", utils.AuthMiddleware(), controllers.DeleteActivity)
 	// Inscripciones
 	router.POST("/inscripciones", utils.AuthMiddleware(), controllers.RegisterInscription)
 	router.GET("/my-activities", utils.AuthMiddleware(), controllers.GetMyActivities)
