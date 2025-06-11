@@ -10,7 +10,7 @@ import LogoutButton from "../components/LogoutButton";
 
 function Header() {
   return (
-    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2rem', background: '#222', color: '#fff' }}>
+    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2rem', background: '#222', color: '#fff', position: 'relative', zIndex: 20 }}>
       <h1 style={{ margin: 0, fontSize: 28, letterSpacing: 2 }}>FROMA NOVA</h1>
       <LogoutButton />
     </header>
@@ -29,18 +29,18 @@ function PublicRoute({ children }) {
 
 function App() {
   const location = useLocation();
-  // No muestro el header en login/register
+  // El header solo no se muestra en login/register
   const hideHeader = ["/login", "/register"].includes(location.pathname);
   return (
     <>
       {!hideHeader && <Header />}
       <Routes>
-        <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
-        <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
-        <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
-        <Route path="/actividad/:id" element={<PrivateRoute><ActivityDetailPage /></PrivateRoute>} />
-        <Route path="/mis-actividades" element={<PrivateRoute><MyActivitiesPage /></PrivateRoute>} />
-        <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/actividad/:id" element={<ActivityDetailPage />} />
+        <Route path="/mis-actividades" element={<MyActivitiesPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </>
   );
