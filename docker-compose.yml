@@ -12,7 +12,8 @@ services:
       - mysql_data:/var/lib/mysql
 
   backend:
-    build: .
+    build:
+      context: ./backend
     container_name: gym_backend
     ports:
       - "8080:8080"
@@ -20,6 +21,14 @@ services:
       - mysql
     environment:
       DB_DSN: root:250498La@tcp(mysql:3306)/GYM?parseTime=true
+    restart: always
+
+  frontend:
+    build:
+      context: ./Frontend
+    container_name: gym_frontend
+    ports:
+      - "80:80"
     restart: always
 
 volumes:

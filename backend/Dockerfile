@@ -7,4 +7,6 @@ COPY . .
 RUN go mod tidy
 RUN go build -o server .
 
-CMD ["/app/server"]
+RUN chmod +x /app/wait-for-mysql.sh
+
+ENTRYPOINT ["/app/wait-for-mysql.sh"]
