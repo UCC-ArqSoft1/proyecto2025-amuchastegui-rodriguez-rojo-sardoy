@@ -1,0 +1,113 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+.login-bg {
+  min-height: 100vh;
+  min-width: 100vw;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 3rem 0 3rem;
+}
+
+.login-logo {
+  color: #FFD34E;
+  font-weight: bold;
+  font-size: 36px;
+  letter-spacing: 2px;
+  font-family: 'Montserrat', sans-serif;
+  text-shadow: 1px 1px 8px #000;
+}
+
+.login-register-btn {
+  color: #222;
+  background: #FFD34E;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.login-register-btn:hover {
+  background: #ffb800;
+  color: #222;
+}
+
+.login-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-title {
+  color: #fff;
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 32px;
+  text-shadow: 2px 2px 8px #000;
+}
+
+.login-form-container {
+  background: rgba(34, 34, 34, 0.95);
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.3);
+  min-width: 320px;
+}
+
+.login-input {
+  display: block;
+  margin-bottom: 1.2rem;
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  background: #222;
+  color: #fff;
+  outline: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.login-input::placeholder {
+  color: #bbb;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 0.8rem;
+  background: #FFD34E;
+  color: #222;
+  font-weight: bold;
+  font-size: 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: background 0.2s;
+}
+
+.login-btn:hover {
+  background: #ffb800;
+}
