@@ -1,0 +1,84 @@
+.activity-detail-bg {
+  min-height: 100vh;
+  min-width: 100vw;
+  width: 100vw;
+  height: 100vh;
+  background: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.activity-detail-card {
+  background: #181818;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.13);
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  max-width: 420px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.activity-detail-icon {
+  margin-bottom: 1.5rem;
+  width: 90px;
+  height: 90px;
+}
+
+.activity-detail-title {
+  color: #FFD34E;
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 0.7rem;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.activity-detail-info {
+  color: #eaeaea;
+  font-size: 1.1rem;
+  margin-bottom: 1.2rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.activity-detail-label {
+  color: #FFD34E;
+  font-weight: 600;
+  margin-right: 0.3em;
+}
+
+.activity-detail-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background: #FFD34E;
+  color: #222;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1.2rem;
+  transition: background 0.2s;
+}
+
+.activity-detail-btn:hover {
+  background: #ffb800;
+}
+
+.activity-detail-success {
+  color: #4caf50;
+  font-weight: bold;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.activity-detail-error {
+  color: #e53935;
+  font-weight: bold;
+  margin-top: 1rem;
+  text-align: center;
+}
