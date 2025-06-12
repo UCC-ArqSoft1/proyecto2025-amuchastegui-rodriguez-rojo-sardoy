@@ -1,64 +1,218 @@
-import React, { useState } from "react";
-import ActivityList from "../components/ActivityList";
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import '../styles/admin.css';
 
-const initialActivities = [
-  { id: 1, title: "Fútbol", schedule: "Lunes 18:00", instructor: "Prof. Gómez", category: "Deporte" },
-  { id: 2, title: "Yoga", schedule: "Martes 10:00", instructor: "Prof. Pérez", category: "Bienestar" },
-];
+const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminPage = () => {
-  const [activities, setActivities] = useState(initialActivities);
-  const [form, setForm] = useState({ title: "", schedule: "", instructor: "", category: "" });
+  const navigate = useNavigate();
+  const [activities, setActivities] = useState([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [form, setForm] = useState({ nombre: "", cupo: "", dia: "", profesor: "", duracion: "", categoria: "" });
   const [editing, setEditing] = useState(null);
   const [message, setMessage] = useState("");
+  const userName = localStorage.getItem('userName');
+
+  useEffect(() => {
+    if (localStorage.getItem('role') !== 'admin') {
+      navigate('/');
+      return;
+    }
+    fetchActivities();
+  }, []);
+
+  const fetchActivities = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/actividades`);
+      setActivities(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error('Error al cargar actividades:', error);
+      setMessage('Error al cargar las actividades');
+    }
+  };
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editing) {
-      setActivities(acts => acts.map(a => a.id === editing ? { ...a, ...form } : a));
-      setMessage("Actividad editada correctamente");
-    } else {
-      setActivities(acts => [...acts, { ...form, id: Date.now() }]);
-      setMessage("Actividad creada correctamente");
+    try {
+      const token = localStorage.getItem('token');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      if (editing) {
+        await axios.put(`${API_URL}/actividades/${editing}`, form, config);
+        setMessage("Actividad editada correctamente");
+      } else {
+        await axios.post(`${API_URL}/actividades`, form, config);
+        setMessage("Actividad creada correctamente");
+      }
+      fetchActivities();
+      setForm({ nombre: "", cupo: "", dia: "", profesor: "", duracion: "", categoria: "" });
+      setEditing(null);
+      setShowCreateForm(false);
+    } catch (error) {
+      setMessage("Error al guardar la actividad");
     }
-    setForm({ title: "", schedule: "", instructor: "", category: "" });
-    setEditing(null);
-    setTimeout(() => setMessage(""), 1500);
+    setTimeout(() => setMessage(""), 3000);
   };
 
   const handleEdit = activity => {
-    setForm(activity);
-    setEditing(activity.id);
+    setForm({
+      nombre: activity.nombre || "",
+      cupo: activity.cupo || "",
+      dia: activity.dia || "",
+      profesor: activity.profesor || "",
+      duracion: activity.duracion || "",
+      categoria: activity.categoria || ""
+    });
+    setEditing(activity.id || activity.actividad_id);
+    setShowCreateForm(true);
   };
 
-  const handleDelete = id => {
-    setActivities(acts => acts.filter(a => a.id !== id));
-    setMessage("Actividad eliminada correctamente");
-    setTimeout(() => setMessage(""), 1500);
+  const handleDelete = async (id) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta actividad?')) {
+      try {
+        const token = localStorage.getItem('token');
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        await axios.delete(`${API_URL}/actividades/${id}`, config);
+        setMessage("Actividad eliminada correctamente");
+        fetchActivities();
+      } catch (error) {
+        setMessage("Error al eliminar la actividad");
+      }
+      setTimeout(() => setMessage(""), 3000);
+    }
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: '2rem auto' }}>
-      <h2>Administrar actividades</h2>
-      <form onSubmit={handleSubmit} style={{ marginBottom: 24 }}>
-        <input name="title" value={form.title} onChange={handleChange} placeholder="Título" required style={{ marginRight: 8 }} />
-        <input name="schedule" value={form.schedule} onChange={handleChange} placeholder="Horario" required style={{ marginRight: 8 }} />
-        <input name="instructor" value={form.instructor} onChange={handleChange} placeholder="Instructor" required style={{ marginRight: 8 }} />
-        <input name="category" value={form.category} onChange={handleChange} placeholder="Categoría" required style={{ marginRight: 8 }} />
-        <button type="submit">{editing ? "Editar" : "Crear"}</button>
-      </form>
-      {message && <p style={{ color: 'green' }}>{message}</p>}
-      <ActivityList activities={activities} onSelect={handleEdit} />
-      <ul>
-        {activities.map(a => (
-          <li key={a.id} style={{ marginTop: 8 }}>
-            <button onClick={() => handleEdit(a)} style={{ marginRight: 8 }}>Editar</button>
-            <button onClick={() => handleDelete(a.id)}>Eliminar</button>
-          </li>
-        ))}
-      </ul>
+    <div className="admin-page">
+      <div className="admin-content-wrapper">
+        <div className="admin-welcome">
+          <h2>Bienvenido {userName}</h2>
+        </div>
+
+        <div className="admin-actions">
+          <button
+            className="admin-action-button create"
+            onClick={() => {
+              setShowCreateForm(true);
+              setEditing(null);
+              setForm({ nombre: "", cupo: "", dia: "", profesor: "", duracion: "", categoria: "" });
+              setMessage("");
+            }}
+          >
+            Crear Actividad
+          </button>
+          <button
+            className="admin-action-button delete"
+            onClick={() => {
+              setShowCreateForm(false);
+              setMessage("");
+            }}
+          >
+            Eliminar Actividad
+          </button>
+        </div>
+
+        {message && <div className="admin-message">{message}</div>}
+
+        {showCreateForm && (
+          <div className="admin-form-container">
+            <div className="admin-form">
+              <h2>{editing ? "Editar Actividad" : "Crear Nueva Actividad"}</h2>
+              <form onSubmit={handleSubmit}>
+                <input
+                  name="nombre"
+                  value={form.nombre}
+                  onChange={handleChange}
+                  placeholder="Nombre"
+                  required
+                />
+                <input
+                  name="cupo"
+                  value={form.cupo}
+                  onChange={handleChange}
+                  placeholder="Cupo"
+                  required
+                />
+                <input
+                  name="dia"
+                  value={form.dia}
+                  onChange={handleChange}
+                  placeholder="Día"
+                  required
+                />
+                <input
+                  name="profesor"
+                  value={form.profesor}
+                  onChange={handleChange}
+                  placeholder="Profesor"
+                  required
+                />
+                <input
+                  name="duracion"
+                  value={form.duracion}
+                  onChange={handleChange}
+                  placeholder="Duración (minutos)"
+                  type="number"
+                  min="1"
+                  required
+                />
+                <input
+                  name="categoria"
+                  value={form.categoria}
+                  onChange={handleChange}
+                  placeholder="Categoría"
+                  required
+                />
+                <div className="form-buttons">
+                  <button type="submit" className="admin-button">
+                    {editing ? "Guardar Cambios" : "Crear Actividad"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCreateForm(false);
+                      setEditing(null);
+                      setForm({ nombre: "", cupo: "", dia: "", profesor: "", duracion: "", categoria: "" });
+                    }}
+                    className="admin-button cancel"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        <div className="activities-grid">
+          {(activities || []).map(activity => (
+            <div key={activity.actividad_id || activity.id} className="activity-card">
+              <h3>{activity.nombre}</h3>
+              <p><b>Cupo:</b> {activity.cupo}</p>
+              <p><b>Día:</b> {activity.dia}</p>
+              <p><b>Profesor:</b> {activity.profesor}</p>
+              <p><b>Duración:</b> {activity.duracion} min</p>
+              <p><b>Categoría:</b> {activity.categoria}</p>
+              <div className="activity-actions">
+                <button
+                  onClick={() => handleEdit(activity)}
+                  className="admin-button edit"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => handleDelete(activity.actividad_id || activity.id)}
+                  className="admin-button delete"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

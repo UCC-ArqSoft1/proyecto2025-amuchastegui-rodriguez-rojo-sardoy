@@ -23,14 +23,23 @@ function LoginPage() {
         throw new Error('Respuesta del servidor incompleta')
       }
 
+      // Limpiar localStorage antes de guardar nuevos datos
+      localStorage.clear();
+
       // Guardar en localStorage
-      localStorage.setItem('token', token)
-      localStorage.setItem('userName', name)
-      localStorage.setItem('userId', user_id)
-      localStorage.setItem('role', role)
+      localStorage.setItem('token', token);
+      localStorage.setItem('userName', name);
+      localStorage.setItem('userId', user_id);
+      localStorage.setItem('role', role);
+
+
 
       alert('Login exitoso. ¡Bienvenido, ' + name + '!')
-      navigate('/') // redirigí al home
+      if (role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/')
+      }
     } catch (error) {
       console.error('Error en login:', error)
       alert(error.response?.data?.error || 'Error al iniciar sesión')

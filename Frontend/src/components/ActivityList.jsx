@@ -19,7 +19,7 @@ const ActivityList = ({ onSelect, showLogo = true, activities = [] }) => (
       <div className="activities-grid activities-grid-3cols">
         {activities.map((activity) => (
           <div
-            key={activity.actividad_id}
+            key={activity.id}
             className="activity-card"
             onClick={() => onSelect && onSelect(activity)}
           >

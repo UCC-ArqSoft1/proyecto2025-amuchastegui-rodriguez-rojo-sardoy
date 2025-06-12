@@ -8,7 +8,6 @@ import LoginPage from "./Login";
 import RegisterPage from "./Register";
 import LogoutButton from "../components/LogoutButton";
 import SearchBar from "../components/SearchBar";
-import CreateActivity from "./CreateActivity";
 
 function Header({ showSearch, search, setSearch }) {
   return (
@@ -39,14 +38,25 @@ function Header({ showSearch, search, setSearch }) {
   );
 }
 
-function PrivateRoute({ children }) {
+// Componente para rutas protegidas
+function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/login" replace />;
+  const role = localStorage.getItem('role');
+  if (!token || !role) {
+    localStorage.clear();
+    return <Navigate to="/login" replace />;
+  }
+  return children;
 }
 
+// Componente para rutas públicas (login y registro)
 function PublicRoute({ children }) {
   const token = localStorage.getItem('token');
-  return !token ? children : <Navigate to="/" replace />;
+  const role = localStorage.getItem('role');
+  if (token && role) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
 }
 
 function App() {
@@ -55,18 +65,48 @@ function App() {
   const showSearch = location.pathname === "/";
   // El header solo no se muestra en login/register
   const hideHeader = ["/login", "/register"].includes(location.pathname);
+
   return (
     <>
       {!hideHeader && <Header showSearch={showSearch} search={search} setSearch={setSearch} />}
-      <div style={{ paddingTop: 90 }}>
+      <div style={{ paddingTop: hideHeader ? 0 : 90 }}>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/" element={<Home search={search} setSearch={setSearch} />} />
-          <Route path="/actividad/:id" element={<ActivityDetailPage />} />
-          <Route path="/mis-actividades" element={<MyActivitiesPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/crear-actividad" element={<CreateActivity />} />
+          {/* Rutas públicas */}
+          <Route path="/login" element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          } />
+          <Route path="/register" element={
+            <PublicRoute>
+              <RegisterPage />
+            </PublicRoute>
+          } />
+
+          {/* Rutas protegidas */}
+          <Route path="/" element={
+            <ProtectedRoute>
+              <Home search={search} setSearch={setSearch} />
+            </ProtectedRoute>
+          } />
+          <Route path="/actividad/:id" element={
+            <ProtectedRoute>
+              <ActivityDetailPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/mis-actividades" element={
+            <ProtectedRoute>
+              <MyActivitiesPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          } />
+
+          {/* Redirigir cualquier otra ruta al login */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </>
