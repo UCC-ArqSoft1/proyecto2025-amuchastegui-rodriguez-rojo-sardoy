@@ -18,16 +18,32 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	userID, token, name, err := services.Login(request.Email, request.Password)
+	// Verificar si es un email de administrador
+	adminEmails := []string{"admin@admin.com", "vice@admin.com", "test@admin.com"}
+	isAdminEmail := false
+	for _, adminEmail := range adminEmails {
+		if request.Email == adminEmail {
+			isAdminEmail = true
+			break
+		}
+	}
+
+	userID, token, name, role, err := services.Login(request.Email, request.Password)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Credenciales incorrectas"})
 		return
+	}
+
+	// Si no es un email de administrador, forzar el rol a "socio"
+	if !isAdminEmail {
+		role = "socio"
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{
 		"user_id": userID,
 		"token":   token,
 		"name":    name,
+		"role":    role,
 		"message": "201. Verificación realizada con éxito",
 	})
 }

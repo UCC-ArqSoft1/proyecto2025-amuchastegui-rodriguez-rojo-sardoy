@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { activityData } from "../components/ActivityList";
+import axios from "axios";
 import "../styles/activity-detail.css";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const ActivityDetailPage = () => {
   const { id } = useParams();
@@ -11,23 +13,16 @@ const ActivityDetailPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulamos la carga de datos
     const fetchActivity = async () => {
       try {
-        // En producción, esto sería una llamada real a la API
-        const foundActivity = activityData.find(a => a.actividad_id === parseInt(id));
-        if (foundActivity) {
-          setActivity(foundActivity);
-        } else {
-          setError("Actividad no encontrada");
-        }
+        const res = await axios.get(`${API_URL}/actividades/${id}`);
+        setActivity(res.data);
       } catch (err) {
-        setError("Error al cargar la actividad");
+        setError("Actividad no encontrada");
       } finally {
         setLoading(false);
       }
     };
-
     fetchActivity();
   }, [id]);
 
@@ -38,12 +33,9 @@ const ActivityDetailPage = () => {
         navigate("/login");
         return;
       }
-
-      // Aquí iría la llamada real a la API
-      console.log("Inscribiendo a la actividad:", activity.actividad_id);
+      // Aquí iría la llamada real a la API para inscribirse
       alert("¡Inscripción exitosa!");
     } catch (error) {
-      console.error("Error al inscribirse:", error);
       alert("Error al inscribirse en la actividad");
     }
   };
@@ -86,7 +78,7 @@ const ActivityDetailPage = () => {
             <p>{activity.descripcion}</p>
           </div>
         </div>
-        <button className="activity-detail-btn" style={{ margin: '0.7rem auto 0 auto', display: 'block', width: 140, fontSize: 15 }} onClick={handleInscription}>
+        <button onClick={handleInscription} className="activity-detail-btn" style={{ marginTop: 16, width: '100%' }}>
           Inscribirse
         </button>
       </div>

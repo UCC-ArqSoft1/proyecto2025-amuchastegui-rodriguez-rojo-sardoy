@@ -1,7 +1,8 @@
+version: '3.8'
+
 services:
   mysql:
-    image: mysql:9.3
-    restart: always
+    image: mysql:8.0
     container_name: gym_mysql
     environment:
       MYSQL_ROOT_PASSWORD: 250498La
@@ -10,6 +11,11 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+    restart: always
 
   backend:
     build:
@@ -18,7 +24,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       DB_DSN: root:250498La@tcp(mysql:3306)/GYM?parseTime=true
     restart: always
@@ -29,6 +36,8 @@ services:
     container_name: gym_frontend
     ports:
       - "80:80"
+    depends_on:
+      - backend
     restart: always
 
 volumes:

@@ -21,10 +21,29 @@ function RegisterPage() {
 
   const handleRegister = async () => {
     try {
-      await axios.post(`${API_URL}/register`, form)
-      alert('Registro exitoso')
-      navigate('/login')
+      // Validar campos requeridos
+      if (!form.first_name || !form.last_name || !form.email || !form.password) {
+        alert('Por favor complete todos los campos')
+        return
+      }
+
+      // Validar formato de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(form.email)) {
+        alert('Por favor ingrese un email válido')
+        return
+      }
+
+      const response = await axios.post(`${API_URL}/register`, form)
+
+      if (response.data) {
+        alert('Registro exitoso. Por favor inicie sesión.')
+        navigate('/login')
+      } else {
+        throw new Error('Respuesta del servidor incompleta')
+      }
     } catch (error) {
+      console.error('Error en registro:', error)
       alert(error.response?.data?.error || 'Error al registrarse')
     }
   }

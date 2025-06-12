@@ -8,6 +8,7 @@ import LoginPage from "./Login";
 import RegisterPage from "./Register";
 import LogoutButton from "../components/LogoutButton";
 import SearchBar from "../components/SearchBar";
+import CreateActivity from "./CreateActivity";
 
 function Header({ showSearch, search, setSearch }) {
   return (
@@ -27,7 +28,7 @@ function Header({ showSearch, search, setSearch }) {
       boxSizing: 'border-box',
       boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
     }}>
-      <h1 style={{ margin: 0, fontSize: 28, letterSpacing: 2, fontFamily: 'Montserrat, sans-serif', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '30vw' }}>FORMA NOVA</h1>
+      <h1 style={{ margin: 0, fontSize: 28, letterSpacing: 2, fontFamily: 'Montserrat, sans-serif', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '30vw', color: '#FFD34E' }}>FORMA NOVA</h1>
       {showSearch && (
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center', marginLeft: 30, marginRight: 30 }}>
           <SearchBar search={search} setSearch={setSearch} />
@@ -65,6 +66,7 @@ function App() {
           <Route path="/actividad/:id" element={<ActivityDetailPage />} />
           <Route path="/mis-actividades" element={<MyActivitiesPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/crear-actividad" element={<CreateActivity />} />
         </Routes>
       </div>
     </>

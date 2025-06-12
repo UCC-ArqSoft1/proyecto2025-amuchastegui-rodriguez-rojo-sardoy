@@ -17,16 +17,22 @@ function LoginPage() {
         password
       })
 
-      const { token, name, user_id } = response.data
+      const { token, name, user_id, role } = response.data
+
+      if (!token || !name || !user_id || !role) {
+        throw new Error('Respuesta del servidor incompleta')
+      }
 
       // Guardar en localStorage
       localStorage.setItem('token', token)
       localStorage.setItem('userName', name)
       localStorage.setItem('userId', user_id)
+      localStorage.setItem('role', role)
 
       alert('Login exitoso. ¡Bienvenido, ' + name + '!')
       navigate('/') // redirigí al home
     } catch (error) {
+      console.error('Error en login:', error)
       alert(error.response?.data?.error || 'Error al iniciar sesión')
     }
   }
