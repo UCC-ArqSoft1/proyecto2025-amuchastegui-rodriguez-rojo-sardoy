@@ -9,7 +9,7 @@ const AdminPage = () => {
   const navigate = useNavigate();
   const [activities, setActivities] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [form, setForm] = useState({ nombre: "", descripcion: "", categoria: "", dia: "", duracion: "", cupo: "", profesor: "", imageUrl: "" });
+  const [form, setForm] = useState({ nombre: "", descripcion: "", categoria: "", dia: "", duracion: "", cupo: "", profesor: "", image: null });
   const [editing, setEditing] = useState(null);
   const [message, setMessage] = useState("");
   const userName = localStorage.getItem('userName');
@@ -32,7 +32,13 @@ const AdminPage = () => {
     }
   };
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = e => {
+    if (e.target.type === "file") {
+      setForm({ ...form, image: e.target.files[0] });
+    } else {
+      setForm({ ...form, [e.target.name]: e.target.value });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,34 +49,30 @@ const AdminPage = () => {
         return;
       }
       const token = localStorage.getItem('token');
-      console.log('Token:', token);
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const payload = {
-        name: form.nombre,
-        description: form.descripcion,
-        category: form.categoria,
-        date: form.dia,
-        duration: parseInt(form.duracion, 10),
-        quota: parseInt(form.cupo, 10),
-        profesor: form.profesor,
-        imageUrl: form.imageUrl
-      };
-      console.log('Payload:', payload);
+      const formData = new FormData();
+      formData.append("name", form.nombre);
+      formData.append("description", form.descripcion);
+      formData.append("category", form.categoria);
+      formData.append("date", form.dia);
+      formData.append("duration", form.duracion);
+      formData.append("quota", form.cupo);
+      formData.append("profesor", form.profesor);
+      if (form.image) {
+        formData.append("image", form.image);
+      }
       if (editing) {
-        await axios.put(`${API_URL}/actividades/${editing}`, payload, config);
+        await axios.put(`${API_URL}/actividades/${editing}`, formData, { ...config, headers: { ...config.headers, 'Content-Type': 'multipart/form-data' } });
         setMessage("Actividad editada correctamente");
       } else {
-        const response = await axios.post(`${API_URL}/actividades`, payload, config);
-        console.log('Response:', response.data);
+        await axios.post(`${API_URL}/actividades`, formData, { ...config, headers: { ...config.headers, 'Content-Type': 'multipart/form-data' } });
         setMessage("Actividad creada correctamente");
       }
       fetchActivities();
-      setForm({ nombre: "", descripcion: "", categoria: "", dia: "", duracion: "", cupo: "", profesor: "", imageUrl: "" });
+      setForm({ nombre: "", descripcion: "", categoria: "", dia: "", duracion: "", cupo: "", profesor: "", image: null });
       setEditing(null);
       setShowCreateForm(false);
     } catch (error) {
-      console.error('Error completo:', error);
-      console.error('Error response:', error.response?.data);
       setMessage(error.response?.data?.error || "Error al guardar la actividad");
     }
     setTimeout(() => setMessage(""), 3000);
@@ -85,7 +87,7 @@ const AdminPage = () => {
       duracion: activity.duracion || activity.duration || "",
       cupo: activity.cupo || activity.quota || "",
       profesor: activity.profesor || "",
-      imageUrl: activity.imageUrl || ""
+      image: null // No se puede previsualizar la imagen existente
     });
     setEditing(activity.id || activity.actividad_id);
     setShowCreateForm(true);
@@ -108,18 +110,18 @@ const AdminPage = () => {
 
   return (
     <div className="admin-page">
-      <div className="admin-content-wrapper" style={{ paddingTop: 110, paddingLeft: 16, paddingRight: 16, maxWidth: 1200, margin: '0 auto' }}>
+      <div className="admin-content-wrapper admin-content-padded">
         <div className="admin-welcome" style={{ textAlign: 'center', marginBottom: 0 }}>
           <h2>Bienvenido {userName}</h2>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', margin: '32px 0 24px 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '64px 0 24px 0' }}>
           <button
             className="admin-action-button create"
             style={{ fontSize: 22, padding: '1rem 2.5rem', background: '#FFD34E', color: '#222', fontWeight: 700, border: 'none', borderRadius: 12, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
             onClick={() => {
               setShowCreateForm(true);
               setEditing(null);
-              setForm({ nombre: "", descripcion: "", categoria: "", dia: "", duracion: "", cupo: "", profesor: "", imageUrl: "" });
+              setForm({ nombre: "", descripcion: "", categoria: "", dia: "", duracion: "", cupo: "", profesor: "", image: null });
               setMessage("");
             }}
           >
@@ -127,14 +129,13 @@ const AdminPage = () => {
           </button>
         </div>
 
-
         {message && <div className="admin-message">{message}</div>}
 
         {showCreateForm && (
           <div className="admin-form-container" style={{ marginTop: 60, marginBottom: 40 }}>
             <div className="admin-form">
               <h2>{editing ? "Editar Actividad" : "Crear Nueva Actividad"}</h2>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} encType="multipart/form-data">
                 <input
                   name="nombre"
                   value={form.nombre}
@@ -192,11 +193,10 @@ const AdminPage = () => {
                   required
                 />
                 <input
-                  name="imageUrl"
-                  value={form.imageUrl}
+                  name="image"
+                  type="file"
+                  accept="image/*"
                   onChange={handleChange}
-                  placeholder="URL de la imagen"
-                  type="url"
                 />
                 <div className="form-buttons">
                   <button type="submit" className="admin-button">
@@ -207,7 +207,7 @@ const AdminPage = () => {
                     onClick={() => {
                       setShowCreateForm(false);
                       setEditing(null);
-                      setForm({ nombre: "", descripcion: "", categoria: "", dia: "", duracion: "", cupo: "", profesor: "", imageUrl: "" });
+                      setForm({ nombre: "", descripcion: "", categoria: "", dia: "", duracion: "", cupo: "", profesor: "", image: null });
                     }}
                     className="admin-button cancel"
                   >
@@ -220,62 +220,33 @@ const AdminPage = () => {
         )}
 
         {!showCreateForm && (
-          <div className="activities-grid" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '1.2rem',
-            marginTop: 10,
-            width: '100%',
-            alignItems: 'stretch',
-            maxHeight: 'calc(100vh - 220px)',
-            overflowY: 'auto',
-            paddingBottom: 24,
-          }}>
+          <div className="activities-grid admin-activities-grid">
             {(activities && activities.length > 0) ? (
-              activities.map(activity => {
-                console.log('Actividad:', activity);
-                return (
-                  <div key={activity.id || activity.actividad_id} className="activity-card" style={{
-                    background: '#181818',
-                    border: '2px solid #FFD34E',
-                    borderRadius: 14,
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    padding: '1.5rem 1rem',
-                    minHeight: 120,
-                    maxWidth: 220,
-                    margin: '0 auto',
-                    width: '100%',
-                  }}>
-                    <div className="activity-icon" style={{ fontSize: 32, color: '#FFD34E', marginBottom: 8 }}>
-                      <span role="img" aria-label="actividad">🏋️‍♂️</span>
-                    </div>
-                    <div className="activity-name">{activity.name}</div>
-                    <div className="activity-info">
-                      <div className="activity-day" style={{ color: '#fff' }}>{activity.date}</div>
-                      <div className="activity-prof" style={{ color: '#fff' }}>{activity.profesor}</div>
-                    </div>
-                    <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-                      <button
-                        onClick={() => handleEdit(activity)}
-                        className="admin-button edit"
-                        style={{ background: '#28a745', color: '#fff', border: 'none', borderRadius: 6, padding: '0.4rem 1.2rem', fontWeight: 600, cursor: 'pointer' }}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => handleDelete(activity.id || activity.actividad_id)}
-                        className="admin-button delete"
-                        style={{ background: '#dc3545', color: '#fff', border: 'none', borderRadius: 6, padding: '0.4rem 1.2rem', fontWeight: 600, cursor: 'pointer' }}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
+              activities.map(activity => (
+                <div key={activity.id || activity.actividad_id} className="activity-card">
+                  <div className="activity-name">{activity.name}</div>
+                  <div className="activity-info">
+                    <div className="activity-day">{activity.date}</div>
+                    <div className="activity-prof">{activity.profesor}</div>
                   </div>
-                );
-              })
+                  <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                    <button
+                      onClick={() => handleEdit(activity)}
+                      className="admin-button edit"
+                      style={{ background: '#28a745', color: '#fff', border: 'none', borderRadius: 6, padding: '0.4rem 1.2rem', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(activity.id || activity.actividad_id)}
+                      className="admin-button delete"
+                      style={{ background: '#dc3545', color: '#fff', border: 'none', borderRadius: 6, padding: '0.4rem 1.2rem', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ))
             ) : (
               <div style={{ gridColumn: '1/-1', textAlign: 'center', color: '#888', fontSize: '1.2rem', marginTop: '2rem' }}>
                 No hay actividades para mostrar.

@@ -29,6 +29,8 @@ services:
     environment:
       DB_DSN: root:250498La@tcp(mysql:3306)/GYM?parseTime=true
     restart: always
+    volumes:
+      - ./uploads:/app/uploads
 
   frontend:
     build:

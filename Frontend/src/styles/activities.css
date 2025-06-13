@@ -1,5 +1,5 @@
 .activities-section {
-  padding: 2rem 0 3rem 0;
+  padding: 0.5rem 0 2rem 0;
   background: #fff;
   min-height: 100vh;
 }
@@ -11,39 +11,39 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding-top: 2rem;
+  padding-top: 0.5rem;
 }
 
-
 .activities-title {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 20;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  font-size: 38px;
+  font-size: 2.2rem;
   font-weight: 900;
   letter-spacing: 2px;
-  margin-bottom: 1.2rem;
-  padding: 1.1rem 0 0.7rem 0;
+  margin-bottom: 4rem;
+  margin-top: 2.5rem;
+  padding: 1.2rem 0 0.7rem 0;
   text-align: center;
   color: #FFD34E;
   font-family: 'Montserrat', sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .activities-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 2.5rem;
+  gap: 3.5rem;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .activities-grid.activities-grid-3cols {
   grid-template-columns: repeat(3, 1fr);
   max-width: 900px;
   margin: 0 auto;
-  gap: 1.1rem;
+  gap: 3.5rem;
 }
 
 .activity-card {
@@ -53,16 +53,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.5rem 1rem;
+  padding: 1.2rem 1rem;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
   border: 2px solid #FFD34E;
-  min-height: 120px;
+  min-height: 100px;
   max-width: 220px;
 }
 
 .activity-card:hover {
-  transform: translateY(-8px) scale(1.03);
+  transform: translateY(-4px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
   border: 2px solid #FFD34E;
 }
@@ -87,7 +87,7 @@
 .activity-info {
   margin-top: 0.3em;
   color: #fff;
-  font-size: 1em;
+  font-size: 0.95em;
   text-align: center;
   line-height: 1.4;
   width: 100%;
@@ -95,12 +95,12 @@
 
 .activity-day {
   color: #fff;
-  font-size: 1em;
+  font-size: 0.95em;
   margin-bottom: 0.4em;
 }
 
 .activity-prof {
-  font-size: 1em;
+  font-size: 0.95em;
   color: #FFD34E;
   font-weight: 500;
 }
@@ -121,35 +121,6 @@
   margin-top: 0.3em;
 }
 
-@media (max-width: 900px) {
-  .activities-grid.activities-grid-3cols {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 800px;
-  }
-}
-
-@media (max-width: 700px) {
-  .activities-title {
-    font-size: 26px;
-  }
-
-  .activity-card {
-    padding: 1rem 0.3rem 1rem 0.3rem;
-    min-height: 220px;
-    max-width: 98vw;
-  }
-
-  .activity-name {
-    font-size: 18px;
-  }
-}
-
-@media (max-width: 600px) {
-  .activities-grid.activities-grid-3cols {
-    grid-template-columns: 1fr;
-  }
-}
-
 .activities-header {
   position: absolute;
   top: 24px;
@@ -166,4 +137,35 @@
   background: rgba(255, 255, 255, 0.85);
   padding: 0.2em 0.8em;
   border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  .activities-grid.activities-grid-3cols {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+  }
+}
+
+@media (max-width: 700px) {
+  .activities-title {
+    font-size: 1.3rem;
+    margin-top: 2.5rem;
+    padding: 1.2rem 0 0.7rem 0;
+  }
+
+  .activity-card {
+    padding: 1rem 0.8rem;
+    min-height: 90px;
+    max-width: 100%;
+  }
+
+  .activity-name {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .activities-grid.activities-grid-3cols {
+    grid-template-columns: 1fr;
+  }
 }

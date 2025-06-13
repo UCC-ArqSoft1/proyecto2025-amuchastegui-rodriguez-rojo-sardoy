@@ -35,6 +35,7 @@ func GetActivityByID(id int) (dto.Activity, error) {
 		Duration:     dbActivity.Duration,
 		Quota:        dbActivity.Quota,
 		Profesor:     dbActivity.Profesor,
+		ImageURL:     dbActivity.ImageURL,
 		Inscriptions: inscriptionDTOs,
 	}
 
@@ -59,6 +60,7 @@ func GetAllActivities() ([]dto.Activity, error) {
 			Duration:    a.Duration,
 			Quota:       a.Quota,
 			Profesor:    a.Profesor,
+			ImageURL:    a.ImageURL,
 		}
 		activitiesDTO = append(activitiesDTO, activityDTO)
 	}
@@ -93,6 +95,7 @@ func CreateActivity(activityData *model.Activity) (dto.Activity, error) {
 		Duration:    activityData.Duration,
 		Quota:       activityData.Quota,
 		Profesor:    activityData.Profesor,
+		ImageURL:    activityData.ImageURL,
 	}
 	return activityDTO, nil
 }
@@ -114,6 +117,7 @@ func UpdateActivity(id int, updatedData *model.Activity) (dto.Activity, error) {
 		Duration:    updatedData.Duration,
 		Quota:       updatedData.Quota,
 		Profesor:    updatedData.Profesor,
+		ImageURL:    updatedData.ImageURL,
 	}
 	return activityDTO, nil
 }

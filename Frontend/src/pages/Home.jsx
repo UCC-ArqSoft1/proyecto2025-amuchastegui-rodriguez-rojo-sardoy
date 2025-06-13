@@ -10,7 +10,6 @@ const Home = ({ search, setSearch }) => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [myActivities, setMyActivities] = useState([]);
 
   // Obtener actividades del backend
   useEffect(() => {
@@ -33,49 +32,29 @@ const Home = ({ search, setSearch }) => {
         setLoading(false);
       }
     };
-    const fetchMyActivities = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-        const res = await axios.get(`${API_URL}/my-activities`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setMyActivities(res.data.activities || []);
-      } catch (err) {
-        setMyActivities([]);
-      }
-    };
     fetchActivities();
-    fetchMyActivities();
   }, []);
 
   // Filtrar actividades
-  const filtered = activities.filter(a =>
-    a.name?.toLowerCase().includes(search.toLowerCase()) ||
-    a.day?.toLowerCase().includes(search.toLowerCase()) ||
-    a.profesor?.toLowerCase().includes(search.toLowerCase()) ||
-    a.category?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = activities.filter(a => {
+    const searchText = search.trim().toLowerCase();
+    if (!searchText) return true;
+    // Unir todos los campos relevantes en un solo string
+    const fullText = [
+      a.name, a.nombre, a.category, a.categoria, a.profesor, a.description, a.descripcion, a.day, a.date, a.dia
+    ]
+      .filter(Boolean)
+      .join(' ') // Unir con espacios
+      .toLowerCase();
+    return fullText.includes(searchText);
+  });
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
-      {myActivities.length > 0 && (
-        <div style={{ maxWidth: 900, margin: '2rem auto 1rem auto' }}>
-          <h3 style={{ color: '#FFD34E', textAlign: 'center', fontWeight: 700, fontSize: 20, marginBottom: 10 }}>
-            ¡Ya estás inscripto en {myActivities.length} actividad{myActivities.length > 1 ? 'es' : ''}!
-          </h3>
-          <ActivityList
-            activities={myActivities}
-            onSelect={activity => navigate(`/actividad/${activity.id}`)}
-            showLogo={false}
-          />
-        </div>
-      )}
       {localStorage.getItem('role') === 'admin' && (
         <div style={{ maxWidth: 600, margin: '2rem auto', textAlign: 'right', marginTop: 60 }}>
           <button
             onClick={() => {
-              console.log('Current role:', localStorage.getItem('role'));
               navigate('/admin');
             }}
             style={{
@@ -93,6 +72,8 @@ const Home = ({ search, setSearch }) => {
           </button>
         </div>
       )}
+      {/* Título principal de la sección */}
+      <h2 className="activities-title">TRANSFORMA TU RUTINA</h2>
       {loading ? (
         <div style={{ textAlign: 'center', marginTop: 60 }}>Cargando actividades...</div>
       ) : error ? (

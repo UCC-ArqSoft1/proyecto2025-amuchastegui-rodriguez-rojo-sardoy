@@ -13,7 +13,7 @@ RUN apt-get update && \
 # Copiar todos los archivos al contenedor
 COPY . .
 
-# Asegurar que el script tenga permisos de ejecución
+# Dar permisos de ejecución al script
 RUN chmod +x /app/wait-for-mysql.sh
 
 # Descargar dependencias de Go y compilar
