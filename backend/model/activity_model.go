@@ -5,7 +5,7 @@ type Activity struct {
 	Name         string        `gorm:"type:varchar(100);not null" json:"name"`
 	Description  string        `gorm:"type:varchar(300);not null" json:"description"`
 	Category     string        `gorm:"type:varchar(50);not null" json:"category"`
-	Date         string        `gorm:"type:varchar(100);not null" json:"day"` 
+	Date         string        `gorm:"type:varchar(100);not null" json:"date"`
 	Duration     int           `gorm:"not null" json:"duration"`
 	Quota        int           `gorm:"not null" json:"quota"`
 	Profesor     string        `gorm:"type:varchar(100);not null" json:"profesor"`

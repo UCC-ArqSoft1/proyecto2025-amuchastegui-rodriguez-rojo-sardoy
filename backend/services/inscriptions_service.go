@@ -15,7 +15,7 @@ func RegisterInscription(userID int, input dto.RegisterInscriptionRequest) error
 		return fmt.Errorf("ID de actividad inválido")
 	}
 
-	// ✅ Validar si ya está inscrito
+	// Validar si ya está inscrito
 	var count int64
 	err := db.DB.
 		Model(&model.Inscription{}).
@@ -88,4 +88,3 @@ func Unsubscribe(userID int, activityID int) error {
 	log.Printf("Desinscripción exitosa: userID=%d, activityID=%d", userID, activityID)
 	return nil
 }
-
