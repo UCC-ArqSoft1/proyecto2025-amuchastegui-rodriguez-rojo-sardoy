@@ -9,5 +9,6 @@ type Activity struct {
 	Duration     int           `json:"duration"` // en minutos
 	Quota        int           `json:"quota"`
 	Profesor     string        `json:"profesor"`
+	ImageURL     string        `json:"image_url"`
 	Inscriptions []Inscription `json:"foreignKey:ActivityID"`
 }

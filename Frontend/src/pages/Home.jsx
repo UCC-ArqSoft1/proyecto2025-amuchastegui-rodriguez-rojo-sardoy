@@ -10,6 +10,7 @@ const Home = ({ search, setSearch }) => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [myActivities, setMyActivities] = useState([]);
 
   // Obtener actividades del backend
   useEffect(() => {
@@ -32,22 +33,58 @@ const Home = ({ search, setSearch }) => {
         setLoading(false);
       }
     };
+    const fetchMyActivities = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const res = await axios.get(`${API_URL}/my-activities`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setMyActivities(res.data.activities || []);
+      } catch (err) {
+        setMyActivities([]);
+      }
+    };
     fetchActivities();
+    fetchMyActivities();
   }, []);
 
   // Filtrar actividades
   const filtered = activities.filter(a =>
-    a.nombre?.toLowerCase().includes(search.toLowerCase()) ||
-    a.dia?.toLowerCase().includes(search.toLowerCase()) ||
-    a.categoria?.toLowerCase().includes(search.toLowerCase())
+    a.name?.toLowerCase().includes(search.toLowerCase()) ||
+    a.day?.toLowerCase().includes(search.toLowerCase()) ||
+    a.profesor?.toLowerCase().includes(search.toLowerCase()) ||
+    a.category?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
+      {myActivities.length > 0 && (
+        <div style={{
+          background: '#FFD34E',
+          color: '#222',
+          padding: '1rem',
+          borderRadius: 10,
+          maxWidth: 600,
+          margin: '2rem auto 1rem auto',
+          textAlign: 'center',
+          fontWeight: 600,
+          fontSize: 18,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+        }}>
+          ¡Ya estás inscripto en {myActivities.length} actividad{myActivities.length > 1 ? 'es' : ''}!
+          <div style={{ fontSize: 15, marginTop: 6 }}>
+            {myActivities.map(a => a.title || a.name).join(', ')}
+          </div>
+        </div>
+      )}
       {localStorage.getItem('role') === 'admin' && (
         <div style={{ maxWidth: 600, margin: '2rem auto', textAlign: 'right', marginTop: 60 }}>
           <button
-            onClick={() => navigate('/crear-actividad')}
+            onClick={() => {
+              console.log('Current role:', localStorage.getItem('role'));
+              navigate('/admin');
+            }}
             style={{
               marginBottom: 16,
               padding: '0.5rem 1.2rem',

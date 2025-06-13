@@ -11,6 +11,7 @@ const ActivityDetailPage = () => {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -23,7 +24,21 @@ const ActivityDetailPage = () => {
         setLoading(false);
       }
     };
+    const fetchMyActivities = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const res = await axios.get(`${API_URL}/my-activities`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const myActs = res.data.activities || [];
+        setIsEnrolled(myActs.some(a => String(a.activity_id || a.id) === String(id)));
+      } catch (err) {
+        setIsEnrolled(false);
+      }
+    };
     fetchActivity();
+    fetchMyActivities();
   }, [id]);
 
   const handleInscription = async () => {
@@ -33,10 +48,29 @@ const ActivityDetailPage = () => {
         navigate("/login");
         return;
       }
-      // Aquí iría la llamada real a la API para inscribirse
+      await axios.post(`${API_URL}/inscripciones`, { actividad_id: id }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       alert("¡Inscripción exitosa!");
+      setIsEnrolled(true);
     } catch (error) {
       alert("Error al inscribirse en la actividad");
+    }
+  };
+
+  const handleUnsubscribe = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      // Aquí deberías hacer la llamada real para desinscribirse (DELETE o similar)
+      // Por ahora solo simula
+      alert("Te has desinscripto de la actividad.");
+      setIsEnrolled(false);
+    } catch (error) {
+      alert("Error al desinscribirse de la actividad");
     }
   };
 
@@ -64,22 +98,26 @@ const ActivityDetailPage = () => {
             style={{ width: '100%', maxWidth: 180, maxHeight: 90, objectFit: 'cover', borderRadius: 10, background: '#222', display: 'block' }}
           />
         </div>
-        <div className="activity-detail-info" style={{ fontSize: 15 }}>
-          <div className="info-section">
-            <h3 style={{ fontSize: 16 }}>Información General</h3>
-            <p><span className="activity-detail-label">Día:</span> {activity.dia}</p>
-            <p><span className="activity-detail-label">Profesor:</span> {activity.profesor}</p>
-            <p><span className="activity-detail-label">Duración:</span> {activity.duracion}</p>
-            <p><span className="activity-detail-label">Categoría:</span> {activity.categoria}</p>
-            <p><span className="activity-detail-label">Cupo:</span> {activity.cupo}</p>
+        <div className="activity-detail-info" style={{ fontSize: 16, color: '#fff', textAlign: 'center', marginTop: 18 }}>
+          <div className="info-section" style={{ marginBottom: 18 }}>
+            <h3 style={{ fontSize: 18, color: '#FFD34E', fontWeight: 700, marginBottom: 12 }}>Información General</h3>
+            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Día:</span> {activity.day}</div>
+            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Profesor:</span> {activity.profesor}</div>
+            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Duración:</span> {activity.duration} min</div>
+            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Categoría:</span> {activity.category}</div>
+            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Cupo:</span> {activity.quota}</div>
           </div>
           <div className="info-section">
-            <h3 style={{ fontSize: 16 }}>Descripción</h3>
-            <p>{activity.descripcion}</p>
+            <h3 style={{ fontSize: 18, color: '#FFD34E', fontWeight: 700, marginBottom: 8 }}>Descripción</h3>
+            <div style={{ color: '#fff', fontSize: 15 }}>{activity.description}</div>
           </div>
         </div>
-        <button onClick={handleInscription} className="activity-detail-btn" style={{ marginTop: 16, width: '100%' }}>
-          Inscribirse
+        <button
+          onClick={isEnrolled ? handleUnsubscribe : handleInscription}
+          className="activity-detail-btn"
+          style={{ marginTop: 16, width: '100%', background: isEnrolled ? '#dc3545' : undefined }}
+        >
+          {isEnrolled ? 'Desinscribirse' : 'Inscribirse'}
         </button>
       </div>
     </div>

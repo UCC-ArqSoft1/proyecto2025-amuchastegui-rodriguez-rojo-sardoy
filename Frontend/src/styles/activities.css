@@ -45,18 +45,18 @@
 }
 
 .activity-card {
-  background: #181818;
+  background: #181818 !important;
   border-radius: 14px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem 0.6rem 0.8rem 0.6rem;
+  padding: 1.5rem 1rem;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
-  border: 2px solid transparent;
-  min-height: 150px;
-  max-width: 180px;
+  border: 2px solid #FFD34E;
+  min-height: 120px;
+  max-width: 220px;
 }
 
 .activity-card:hover {
@@ -73,27 +73,50 @@
 
 .activity-name {
   color: #FFD34E;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: bold;
   letter-spacing: 1px;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.8rem;
   font-family: 'Montserrat', sans-serif;
   text-align: center;
+  line-height: 1.3;
 }
 
 .activity-info {
   margin-top: 0.3em;
-  color: #eaeaea;
-  font-size: 0.95em;
+  color: #fff;
+  font-size: 1em;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.4;
+  width: 100%;
+}
+
+.activity-day {
+  color: #fff;
+  font-size: 1em;
+  margin-bottom: 0.4em;
 }
 
 .activity-prof {
-  font-size: 0.95em;
+  font-size: 1em;
   color: #FFD34E;
   font-weight: 500;
-  margin-top: 0.1em;
+}
+
+.activity-category {
+  font-size: 0.85em;
+  color: #eaeaea;
+  margin-top: 0.3em;
+  background: rgba(255, 211, 78, 0.1);
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.activity-duration {
+  font-size: 0.85em;
+  color: #eaeaea;
+  margin-top: 0.3em;
 }
 
 @media (max-width: 900px) {
