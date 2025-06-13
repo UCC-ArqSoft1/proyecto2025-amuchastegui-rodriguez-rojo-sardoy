@@ -7,7 +7,7 @@ import (
 
 func GetActivityByID(id uint) (*model.Activity, error) {
 	var activity model.Activity
-	result := db.DB.First(&activity, id)
+	result := db.DB.Preload("Inscriptions").First(&activity, id)
 	return &activity, result.Error
 }
 

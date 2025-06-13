@@ -60,22 +60,15 @@ const Home = ({ search, setSearch }) => {
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
       {myActivities.length > 0 && (
-        <div style={{
-          background: '#FFD34E',
-          color: '#222',
-          padding: '1rem',
-          borderRadius: 10,
-          maxWidth: 600,
-          margin: '2rem auto 1rem auto',
-          textAlign: 'center',
-          fontWeight: 600,
-          fontSize: 18,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
-        }}>
-          ¡Ya estás inscripto en {myActivities.length} actividad{myActivities.length > 1 ? 'es' : ''}!
-          <div style={{ fontSize: 15, marginTop: 6 }}>
-            {myActivities.map(a => a.title || a.name).join(', ')}
-          </div>
+        <div style={{ maxWidth: 900, margin: '2rem auto 1rem auto' }}>
+          <h3 style={{ color: '#FFD34E', textAlign: 'center', fontWeight: 700, fontSize: 20, marginBottom: 10 }}>
+            ¡Ya estás inscripto en {myActivities.length} actividad{myActivities.length > 1 ? 'es' : ''}!
+          </h3>
+          <ActivityList
+            activities={myActivities}
+            onSelect={activity => navigate(`/actividad/${activity.id}`)}
+            showLogo={false}
+          />
         </div>
       )}
       {localStorage.getItem('role') === 'admin' && (

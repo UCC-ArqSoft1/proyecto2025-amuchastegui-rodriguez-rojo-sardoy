@@ -16,7 +16,7 @@ const ActivityDetailPage = () => {
   useEffect(() => {
     const fetchActivity = async () => {
       try {
-        const res = await axios.get(`${API_URL}/actividades/${id}`);
+        const res = await axios.get(`${API_URL}/actividades/${Number(id)}`);
         setActivity(res.data);
       } catch (err) {
         setError("Actividad no encontrada");
@@ -44,17 +44,22 @@ const ActivityDetailPage = () => {
   const handleInscription = async () => {
     try {
       const token = localStorage.getItem("token");
+      console.log('Token:', token);
       if (!token) {
         navigate("/login");
         return;
       }
-      await axios.post(`${API_URL}/inscripciones`, { actividad_id: id }, {
+      const payload = { actividad_id: Number(id) };
+      console.log('Payload:', JSON.stringify(payload));
+      const res = await axios.post(`${API_URL}/inscripciones`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('Response:', res.data);
       alert("¡Inscripción exitosa!");
       setIsEnrolled(true);
     } catch (error) {
-      alert("Error al inscribirse en la actividad");
+      console.error('Error completo:', error);
+      alert(error.response?.data?.error || "Error al inscribirse en la actividad");
     }
   };
 
@@ -65,10 +70,13 @@ const ActivityDetailPage = () => {
         navigate("/login");
         return;
       }
-      // Aquí deberías hacer la llamada real para desinscribirse (DELETE o similar)
-      // Por ahora solo simula
+      await axios.delete(`${API_URL}/inscripciones/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       alert("Te has desinscripto de la actividad.");
       setIsEnrolled(false);
+      // Refresca los datos de la actividad
+      window.location.reload(); // O puedes llamar a fetchActivity si está disponible fuera del useEffect
     } catch (error) {
       alert("Error al desinscribirse de la actividad");
     }
@@ -77,6 +85,13 @@ const ActivityDetailPage = () => {
   if (loading) return <div className="loading">Cargando...</div>;
   if (error) return <div className="error">{error}</div>;
   if (!activity) return <div className="error">Actividad no encontrada</div>;
+
+  console.log('Detalle actividad:', activity);
+
+  // Calcular si el cupo está completo solo si activity existe
+  // (esto previene errores de acceso a null)
+  // Puedes volver a usar esta lógica si la necesitas en el futuro:
+  // const cupoCompleto = activity.inscriptions && activity.inscriptions.length >= activity.quota;
 
   return (
     <div className="activity-detail-bg">
@@ -101,7 +116,7 @@ const ActivityDetailPage = () => {
         <div className="activity-detail-info" style={{ fontSize: 16, color: '#fff', textAlign: 'center', marginTop: 18 }}>
           <div className="info-section" style={{ marginBottom: 18 }}>
             <h3 style={{ fontSize: 18, color: '#FFD34E', fontWeight: 700, marginBottom: 12 }}>Información General</h3>
-            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Día:</span> {activity.day}</div>
+            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Día:</span> {activity.date}</div>
             <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Profesor:</span> {activity.profesor}</div>
             <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Duración:</span> {activity.duration} min</div>
             <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Categoría:</span> {activity.category}</div>
@@ -119,6 +134,16 @@ const ActivityDetailPage = () => {
         >
           {isEnrolled ? 'Desinscribirse' : 'Inscribirse'}
         </button>
+        {/* {cupoCompleto && !isEnrolled && (
+          <div style={{ color: 'red', marginTop: 8, fontWeight: 600 }}>
+            No puedes inscribirte porque el cupo está completo.
+          </div>
+        )}
+        {isEnrolled && (
+          <div style={{ color: '#FFD34E', marginTop: 8, fontWeight: 600 }}>
+            Ya estás inscripto en esta actividad.
+          </div>
+        )} */}
       </div>
     </div>
   );

@@ -37,6 +37,11 @@ const AdminPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (!form.dia || form.dia.trim() === "") {
+        setMessage("El campo Día es obligatorio.");
+        setTimeout(() => setMessage(""), 3000);
+        return;
+      }
       const token = localStorage.getItem('token');
       console.log('Token:', token);
       const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -76,7 +81,7 @@ const AdminPage = () => {
       nombre: activity.nombre || activity.name || "",
       descripcion: activity.descripcion || activity.description || "",
       categoria: activity.categoria || activity.category || "",
-      dia: activity.dia || activity.date || "",
+      dia: activity.date || "",
       duracion: activity.duracion || activity.duration || "",
       cupo: activity.cupo || activity.quota || "",
       profesor: activity.profesor || "",
@@ -239,7 +244,6 @@ const AdminPage = () => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     padding: '1.5rem 1rem',
-                    cursor: 'pointer',
                     minHeight: 120,
                     maxWidth: 220,
                     margin: '0 auto',
@@ -248,10 +252,26 @@ const AdminPage = () => {
                     <div className="activity-icon" style={{ fontSize: 32, color: '#FFD34E', marginBottom: 8 }}>
                       <span role="img" aria-label="actividad">🏋️‍♂️</span>
                     </div>
-                    <div className="activity-name" style={{ color: '#FFD34E', fontSize: 18, fontWeight: 'bold', letterSpacing: 1, marginBottom: 12, fontFamily: 'Montserrat, sans-serif', textAlign: 'center', lineHeight: 1.3 }}>{activity.name}</div>
-                    <div className="activity-info" style={{ marginTop: 4, color: '#fff', fontSize: 16, textAlign: 'center', lineHeight: 1.4, width: '100%' }}>
-                      <div className="activity-day" style={{ color: '#fff', fontSize: 16, marginBottom: 6 }}>{activity.day}</div>
-                      <div className="activity-prof" style={{ fontSize: 16, color: '#FFD34E', fontWeight: 500 }}>{activity.profesor}</div>
+                    <div className="activity-name">{activity.name}</div>
+                    <div className="activity-info">
+                      <div className="activity-day" style={{ color: '#fff' }}>{activity.date}</div>
+                      <div className="activity-prof" style={{ color: '#fff' }}>{activity.profesor}</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                      <button
+                        onClick={() => handleEdit(activity)}
+                        className="admin-button edit"
+                        style={{ background: '#28a745', color: '#fff', border: 'none', borderRadius: 6, padding: '0.4rem 1.2rem', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleDelete(activity.id || activity.actividad_id)}
+                        className="admin-button delete"
+                        style={{ background: '#dc3545', color: '#fff', border: 'none', borderRadius: 6, padding: '0.4rem 1.2rem', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        Eliminar
+                      </button>
                     </div>
                   </div>
                 );

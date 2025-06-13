@@ -6,6 +6,7 @@ import (
 	"backend/dto"
 	"backend/model"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -25,6 +26,15 @@ func RegisterInscription(userID int, input dto.RegisterInscriptionRequest) error
 	}
 	if count > 0 {
 		return fmt.Errorf("ya estás inscrito en esta actividad")
+	}
+
+	// Validar cupo
+	activity, err := GetActivityByID(input.ActivityID)
+	if err != nil {
+		return fmt.Errorf("Actividad no encontrada")
+	}
+	if len(activity.Inscriptions) >= activity.Quota {
+		return fmt.Errorf("El cupo de la actividad está completo")
 	}
 
 	newInscription := model.Inscription{
@@ -58,3 +68,24 @@ func GetMyActivities(userID int) ([]dto.ActivityInscription, error) {
 
 	return result, nil
 }
+
+func Unsubscribe(userID int, activityID int) error {
+	log.Printf("Intentando desinscribir: userID=%d, activityID=%d", userID, activityID)
+	// Eliminar la inscripción de la base de datos
+	result := db.DB.
+		Where("user_id = ? AND activity_id = ?", userID, activityID).
+		Delete(&model.Inscription{})
+
+	if result.Error != nil {
+		log.Printf("Error al eliminar inscripción: %v", result.Error)
+		return fmt.Errorf("error al eliminar la inscripción: %w", result.Error)
+	}
+	if result.RowsAffected == 0 {
+		log.Printf("No se encontró inscripción para eliminar: userID=%d, activityID=%d", userID, activityID)
+		return fmt.Errorf("no se encontró una inscripción para eliminar")
+	}
+
+	log.Printf("Desinscripción exitosa: userID=%d, activityID=%d", userID, activityID)
+	return nil
+}
+

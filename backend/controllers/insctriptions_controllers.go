@@ -4,6 +4,7 @@ import (
 	"backend/dto"
 	"backend/services"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -62,4 +63,28 @@ func GetMyActivities(ctx *gin.Context) {
 		"message":    "Successfully retrieved enrolled activities",
 		"activities": activities,
 	})
+}
+
+func Unsubscribe(ctx *gin.Context) {
+	userIDValue, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		return
+	}
+	userID, ok := userIDValue.(int)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error al leer userID del token"})
+		return
+	}
+	activityID, err := strconv.Atoi(ctx.Param("actividad_id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID de actividad inválido"})
+		return
+	}
+	err = services.Unsubscribe(userID, activityID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Desinscripción exitosa"})
 }
