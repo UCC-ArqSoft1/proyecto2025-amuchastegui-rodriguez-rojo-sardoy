@@ -6,16 +6,17 @@ import (
 	"backend/dto"
 	"backend/model"
 	"fmt"
-	"log"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 func RegisterInscription(userID int, input dto.RegisterInscriptionRequest) error {
 	if input.ActivityID <= 0 {
-		return fmt.Errorf("ID de actividad inválido")
+		return fmt.Errorf("ID de actividad inválido") // Validación básica del ID
 	}
 
-	// Validar si ya está inscrito
+	// Verifica si el usuario ya está inscrito en esa actividad
 	var count int64
 	err := db.DB.
 		Model(&model.Inscription{}).
@@ -25,10 +26,10 @@ func RegisterInscription(userID int, input dto.RegisterInscriptionRequest) error
 		return fmt.Errorf("error validando inscripción existente: %w", err)
 	}
 	if count > 0 {
-		return fmt.Errorf("ya estás inscrito en esta actividad")
+		return fmt.Errorf("ya estás inscrito en esta actividad") // Evita inscripciones duplicadas
 	}
 
-	// Validar cupo
+	// Valida si hay cupo disponible para la actividad
 	activity, err := GetActivityByID(input.ActivityID)
 	if err != nil {
 		return fmt.Errorf("Actividad no encontrada")
@@ -37,12 +38,14 @@ func RegisterInscription(userID int, input dto.RegisterInscriptionRequest) error
 		return fmt.Errorf("El cupo de la actividad está completo")
 	}
 
+	// Crea la nueva inscripción con la fecha actual
 	newInscription := model.Inscription{
 		UserID:           userID,
 		ActivityID:       input.ActivityID,
 		RegistrationDate: time.Now().Format("2006-01-02"),
 	}
 
+	// Llama al cliente para guardar en la base de datos
 	if err := inscription.CreateInscription(&newInscription); err != nil {
 		return fmt.Errorf("error al registrar inscripción: %w", err)
 	}
@@ -51,6 +54,7 @@ func RegisterInscription(userID int, input dto.RegisterInscriptionRequest) error
 }
 
 func GetMyActivities(userID int) ([]dto.ActivityInscription, error) {
+	// Consulta las inscripciones del usuario
 	activities, err := inscription.GetInscriptionsByUserID(userID)
 	if err != nil {
 		return nil, err
@@ -58,6 +62,7 @@ func GetMyActivities(userID int) ([]dto.ActivityInscription, error) {
 
 	var result []dto.ActivityInscription
 	for _, act := range activities {
+		// Convierte cada inscripción a un DTO reducido para mostrar
 		result = append(result, dto.ActivityInscription{
 			ActivityID: act.ID,
 			Title:      act.Name,
@@ -69,22 +74,6 @@ func GetMyActivities(userID int) ([]dto.ActivityInscription, error) {
 	return result, nil
 }
 
-func Unsubscribe(userID int, activityID int) error {
-	log.Printf("Intentando desinscribir: userID=%d, activityID=%d", userID, activityID)
-	// Eliminar la inscripción de la base de datos
-	result := db.DB.
-		Where("user_id = ? AND activity_id = ?", userID, activityID).
-		Delete(&model.Inscription{})
-
-	if result.Error != nil {
-		log.Printf("Error al eliminar inscripción: %v", result.Error)
-		return fmt.Errorf("error al eliminar la inscripción: %w", result.Error)
-	}
-	if result.RowsAffected == 0 {
-		log.Printf("No se encontró inscripción para eliminar: userID=%d, activityID=%d", userID, activityID)
-		return fmt.Errorf("no se encontró una inscripción para eliminar")
-	}
-
-	log.Printf("Desinscripción exitosa: userID=%d, activityID=%d", userID, activityID)
-	return nil
+type InscriptionService struct {
+	DB *gorm.DB // Inyección de dependencia: instancia de GORM
 }

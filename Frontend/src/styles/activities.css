@@ -10,8 +10,10 @@
   background: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-top: 2rem;
 }
+
 
 .activities-title {
   position: sticky;

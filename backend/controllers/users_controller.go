@@ -12,34 +12,32 @@ import (
 )
 
 func Login(ctx *gin.Context) {
-	var request dto.LoginRequest
+	var request dto.LoginRequest // Estructura para recibir email y password
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Formato de datos inválido"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Formato de datos inválido"}) // Error si el JSON no es válido
 		return
 	}
 
-	// Verificar si es un email de administrador
-	adminEmails := []string{"admin@admin.com", "vice@admin.com", "test@admin.com"}
+	adminEmails := []string{"admin@admin.com", "vice@admin.com", "test@admin.com"} // Lista de emails de admins
 	isAdminEmail := false
 	for _, adminEmail := range adminEmails {
 		if request.Email == adminEmail {
-			isAdminEmail = true
+			isAdminEmail = true // Marca como admin si el email coincide
 			break
 		}
 	}
 
-	userID, token, name, role, err := services.Login(request.Email, request.Password)
+	userID, token, name, role, err := services.Login(request.Email, request.Password) // Llama al servicio de login
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Credenciales incorrectas"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Credenciales incorrectas"}) // Si falla, error 401
 		return
 	}
 
-	// Si no es un email de administrador, forzar el rol a "socio"
 	if !isAdminEmail {
-		role = "socio"
+		role = "socio" // Si no es admin, fuerza el rol a socio
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{
+	ctx.JSON(http.StatusCreated, gin.H{ // Devuelve token y datos del usuario
 		"user_id": userID,
 		"token":   token,
 		"name":    name,
@@ -49,26 +47,25 @@ func Login(ctx *gin.Context) {
 }
 
 func GetUserByID(ctx *gin.Context) {
-	// Obtener el userID que el middleware puso en el context
-	idValue, exists := ctx.Get("userID")
+	idValue, exists := ctx.Get("userID") // Obtiene el userID del token
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido o ausente"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido o ausente"}) // Si no hay ID, error 401
 		return
 	}
 
-	userID, ok := idValue.(int)
+	userID, ok := idValue.(int) // Convierte a entero
 	if !ok {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "ID de usuario inválido en token"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "ID de usuario inválido en token"}) // Error si falla conversión
 		return
 	}
 
-	user, err := services.GetUserByID(userID)
+	user, err := services.GetUserByID(userID) // Busca al usuario por ID
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "404. Error de obtención de datos del usuario"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "404. Error de obtención de datos del usuario"}) // Error si no existe
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{ // Devuelve los datos del usuario
 		"message": "Obtención de datos usuario realizada con éxito",
 		"id":      user.ID,
 		"name":    user.FirstName + " " + user.LastName,
@@ -78,68 +75,65 @@ func GetUserByID(ctx *gin.Context) {
 }
 
 func GetUserActivities(c *gin.Context) {
-	// Validar rol
-	roleRaw, exists := c.Get("role")
+	roleRaw, exists := c.Get("role") // Extrae el rol del usuario autenticado
 	role, ok := roleRaw.(string)
 	if !exists || !ok || role != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Solo administradores pueden acceder a actividades de otros usuarios"})
+		c.JSON(http.StatusForbidden, gin.H{"error": "Solo administradores pueden acceder a actividades de otros usuarios"}) // Bloquea si no es admin
 		return
 	}
 
-	// Continuar si es admin
-	idParam := c.Param("id")
-	id, err := strconv.Atoi(idParam)
+	idParam := c.Param("id")         // Obtiene el parámetro ID desde la URL
+	id, err := strconv.Atoi(idParam) // Convierte a entero
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"}) // Error si no es número
 		return
 	}
 
-	activities, err := services.GetUserActivities(id)
+	activities, err := services.GetUserActivities(id) // Llama al servicio para obtener actividades
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al obtener actividades del usuario"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al obtener actividades del usuario"}) // Error si falla
 		return
 	}
 
-	c.JSON(http.StatusOK, activities)
+	c.JSON(http.StatusOK, activities) // Devuelve las actividades
 }
 
 func RegisterUser(ctx *gin.Context) {
 	var req dto.RegisterRequest
-
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"}) // Error si falla el parseo del JSON
 		return
 	}
 
-	resp, err := services.RegisterUser(req)
+	resp, err := services.RegisterUser(req) // Llama al servicio de registro
 	if err != nil {
-		ctx.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusConflict, gin.H{"error": err.Error()}) // Si el email ya existe, error 409
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, resp)
+	ctx.JSON(http.StatusCreated, resp) // Devuelve el usuario creado
 }
 
 func GetAuthenticatedUser(ctx *gin.Context) {
-	userIDStr, exists := ctx.Get("userID")
+	userIDStr, exists := ctx.Get("userID") // Extrae el userID del token
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "No autorizado"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "No autorizado"}) // Error si falta el token
 		return
 	}
 
-	userID, err := strconv.Atoi(fmt.Sprintf("%v", userIDStr))
+	userID, err := strconv.Atoi(fmt.Sprintf("%v", userIDStr)) // Convierte a entero
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"}) // Error si no es un número válido
 		return
 	}
 
-	user, err := services.GetUserByID(userID)
+	user, err := services.GetUserByID(userID) // Busca el usuario
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"}) // Error si no está en la base
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{ // Devuelve sus datos
 		"id":    user.ID,
 		"name":  user.FirstName + " " + user.LastName,
 		"email": user.Email,
