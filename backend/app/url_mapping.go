@@ -28,5 +28,6 @@ func RegisterRoutes(router *gin.Engine) {
 	// Inscripciones
 	router.POST("/inscripciones", utils.AuthMiddleware(), controllers.RegisterInscription)
 	router.GET("/my-activities", utils.AuthMiddleware(), controllers.GetMyActivities)
+	router.DELETE("/inscripciones/:id", utils.AuthMiddleware(), controllers.UnsubscribeFromActivity)
 
 }

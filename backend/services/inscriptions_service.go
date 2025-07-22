@@ -74,6 +74,26 @@ func GetMyActivities(userID int) ([]dto.ActivityInscription, error) {
 	return result, nil
 }
 
+func UnsubscribeFromActivity(userID int, activityID int) error {
+	if activityID <= 0 {
+		return fmt.Errorf("ID de actividad inválido")
+	}
+	// Verifica si existe la inscripción
+	var count int64
+	err := db.DB.Model(&model.Inscription{}).Where("user_id = ? AND activity_id = ?", userID, activityID).Count(&count).Error
+	if err != nil {
+		return fmt.Errorf("error validando inscripción existente: %w", err)
+	}
+	if count == 0 {
+		return fmt.Errorf("No estás inscripto en esta actividad")
+	}
+	// Elimina la inscripción
+	if err := inscription.DeleteInscriptionByUserAndActivity(userID, activityID); err != nil {
+		return fmt.Errorf("error al desinscribirse: %w", err)
+	}
+	return nil
+}
+
 type InscriptionService struct {
 	DB *gorm.DB // Inyección de dependencia: instancia de GORM
 }

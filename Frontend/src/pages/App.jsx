@@ -10,6 +10,8 @@ import LogoutButton from "../components/LogoutButton";
 import SearchBar from "../components/SearchBar";
 
 function Header({ showSearch, search, setSearch }) {
+  const navigate = useNavigate();
+  const role = localStorage.getItem('role');
   return (
     <header style={{
       display: 'flex',
@@ -33,7 +35,26 @@ function Header({ showSearch, search, setSearch }) {
           <SearchBar search={search} setSearch={setSearch} />
         </div>
       )}
-      <div style={{ marginLeft: 30 }}><LogoutButton /></div>
+      <div style={{ marginLeft: 30, display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Botón para ver mis actividades, solo para usuarios no admin */}
+        {role === 'user' && (
+          <button
+            onClick={() => navigate('/mis-actividades')}
+            style={{
+              padding: '0.5rem 1.2rem',
+              fontSize: 16,
+              background: '#FFD34E',
+              border: 'none',
+              borderRadius: 6,
+              cursor: 'pointer',
+              fontWeight: 600
+            }}
+          >
+            Mis actividades
+          </button>
+        )}
+        <LogoutButton />
+      </div>
     </header>
   );
 }

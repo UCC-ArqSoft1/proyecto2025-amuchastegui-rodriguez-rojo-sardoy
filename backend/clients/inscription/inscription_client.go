@@ -10,7 +10,6 @@ func CreateInscription(ins *model.Inscription) error {
 	return db.DB.Create(ins).Error // Inserta el registro en la tabla "inscriptions"
 }
 
-
 func GetInscriptionsByUserID(userID int) ([]model.Activity, error) {
 	var activities []model.Activity
 
@@ -26,3 +25,7 @@ func GetInscriptionsByUserID(userID int) ([]model.Activity, error) {
 	return activities, err // Devuelve la lista de actividades o el error
 }
 
+// Elimina la inscripción de un usuario a una actividad
+func DeleteInscriptionByUserAndActivity(userID int, activityID int) error {
+	return db.DB.Where("user_id = ? AND activity_id = ?", userID, activityID).Delete(&model.Inscription{}).Error
+}

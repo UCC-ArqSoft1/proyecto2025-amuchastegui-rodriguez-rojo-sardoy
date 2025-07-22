@@ -4,6 +4,7 @@ import (
 	"backend/dto"      // Importa estructuras de transferencia de datos (DTO)
 	"backend/services" // Importa la lógica de negocio (servicios)
 	"net/http"         // Módulo estándar para manejar códigos de respuesta HTTP
+	"strconv"          // Importa el paquete para convertir strings a int
 
 	"github.com/gin-gonic/gin" // Framework web Gin
 )
@@ -65,6 +66,31 @@ func GetMyActivities(ctx *gin.Context) {
 		"message":    "Successfully retrieved enrolled activities",
 		"activities": activities,
 	})
+}
+
+// Handler para desinscribirse de una actividad
+func UnsubscribeFromActivity(c *gin.Context) {
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autenticado"})
+		return
+	}
+	userID, ok := userIDValue.(int)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al leer userID del token"})
+		return
+	}
+	activityIDParam := c.Param("id")
+	activityID, err := strconv.Atoi(activityIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID de actividad inválido"})
+		return
+	}
+	if err := services.UnsubscribeFromActivity(userID, activityID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Desinscripción exitosa"})
 }
 
 // Definición de controlador estructurado (no usado explícitamente acá, pero útil para inyección de dependencias si se extiende)

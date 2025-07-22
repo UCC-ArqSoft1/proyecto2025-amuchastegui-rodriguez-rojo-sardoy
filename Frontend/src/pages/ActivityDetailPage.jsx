@@ -75,8 +75,7 @@ const ActivityDetailPage = () => {
       });
       alert("Te has desinscripto de la actividad.");
       setIsEnrolled(false);
-      // Refresca los datos de la actividad
-      window.location.reload(); // O puedes llamar a fetchActivity si está disponible fuera del useEffect
+      window.location.reload();
     } catch (error) {
       alert("Error al desinscribirse de la actividad");
     }
