@@ -5,8 +5,9 @@ proyecto2025-amuchastegui-rodriguez-rojo-sardoy created by GitHub Classroom
 
 ## Instrucciones para correr el proyecto
 
-1. Abrir una terminal en la carpeta raíz del proyecto.
-2. Ejecutar el siguiente comando:
+1. Cambiar CRLF por LF en el archivo wait-for-mysql.sh.
+2. Abrir una terminal en la carpeta raíz del proyecto.
+3. Ejecutar el siguiente comando:
 
    ```bash
    docker compose up --build
