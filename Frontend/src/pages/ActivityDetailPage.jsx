@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "../styles/activity-detail.css";
+
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const ActivityDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPage = location.state?.from;
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,6 +36,7 @@ const ActivityDetailPage = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         const myActs = res.data.activities || [];
+        console.log('Mis actividades:', myActs);
         setIsEnrolled(myActs.some(a => String(a.activity_id || a.id) === String(id)));
       } catch (err) {
         setIsEnrolled(false);
@@ -94,58 +99,56 @@ const ActivityDetailPage = () => {
 
   return (
     <div className="activity-detail-bg">
-      <div className="activity-detail-card" style={{ position: 'relative', maxWidth: 340, margin: '0 auto', padding: '1.2rem 1rem 1.2rem 1rem' }}>
-        <button
-          className="activity-detail-btn"
-          style={{ position: 'absolute', top: 12, right: 12, width: 70, padding: '0.4rem 0.5rem', fontSize: 12 }}
-          onClick={() => navigate(-1)}
-        >
-          Volver
-        </button>
-        <div className="activity-detail-header">
-          <h1 className="activity-detail-title" style={{ fontSize: 22 }}>{activity.nombre}</h1>
+      <div className="activity-detail-card">
+
+        {/* Header: volver + título en la misma línea */}
+        <div className="activity-header-row">
+          <button className="activity-back-button" style={{ marginRight: '0.05rem' }} onClick={() => navigate(-1)}>
+            Volver
+          </button>
+          <h1 className="activity-detail-title">{activity.name}</h1>
         </div>
-        <div className="activity-detail-image" style={{ width: '90%', margin: '0 auto 0.7rem auto', display: 'flex', justifyContent: 'center' }}>
+        {/* Imagen */}
+        <div className="activity-detail-image">
           <img
-            src={activity.imageUrl || "https://via.placeholder.com/300x120?text=Actividad"}
-            alt={activity.nombre}
-            style={{ width: '100%', maxWidth: 180, maxHeight: 90, objectFit: 'cover', borderRadius: 10, background: '#222', display: 'block' }}
+            src={`${API_URL}${activity.image_url}` || "https://via.placeholder.com/300x120?text=Actividad"}
+            alt={activity.name}
           />
         </div>
-        <div className="activity-detail-info" style={{ fontSize: 16, color: '#fff', textAlign: 'center', marginTop: 18 }}>
-          <div className="info-section" style={{ marginBottom: 18 }}>
-            <h3 style={{ fontSize: 18, color: '#FFD34E', fontWeight: 700, marginBottom: 12 }}>Información General</h3>
-            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Día:</span> {activity.date}</div>
-            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Profesor:</span> {activity.profesor}</div>
-            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Duración:</span> {activity.duration} min</div>
-            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Categoría:</span> {activity.category}</div>
-            <div style={{ marginBottom: 8 }}><span className="activity-detail-label" style={{ color: '#FFD34E', fontWeight: 600 }}>Cupo:</span> {activity.quota}</div>
-          </div>
+        {/* Info general + descripción */}
+        <div className="activity-detail-info">
           <div className="info-section">
-            <h3 style={{ fontSize: 18, color: '#FFD34E', fontWeight: 700, marginBottom: 8 }}>Descripción</h3>
-            <div style={{ color: '#fff', fontSize: 15 }}>{activity.description}</div>
+            <h3>Información General</h3>
+            <div><span className="activity-detail-label">Día:</span> {activity.date}</div>
+            <div><span className="activity-detail-label">Profesor:</span> {activity.profesor}</div>
+            <div><span className="activity-detail-label">Duración:</span> {activity.duration} min</div>
+            <div><span className="activity-detail-label">Categoría:</span> {activity.category}</div>
+            <div><span className="activity-detail-label">Cupo:</span> {activity.quota}</div>
+          </div>
+
+          <div className="info-section" style={{ marginTop: '-0.2rem' }}>
+            <h3>Descripción</h3>
+            <div>{activity.description}</div>
           </div>
         </div>
+
+        {/* Botón de inscripción */}
         <button
           onClick={isEnrolled ? handleUnsubscribe : handleInscription}
           className="activity-detail-btn"
-          style={{ marginTop: 16, width: '100%', background: isEnrolled ? '#dc3545' : undefined }}
+          style={{
+            background: isEnrolled ? '#dc3545' : '#FFD34E',
+            color: isEnrolled ? '#fff' : '#222'
+          }}
         >
           {isEnrolled ? 'Desinscribirse' : 'Inscribirse'}
         </button>
-        {/* {cupoCompleto && !isEnrolled && (
-          <div style={{ color: 'red', marginTop: 8, fontWeight: 600 }}>
-            No puedes inscribirte porque el cupo está completo.
-          </div>
-        )}
-        {isEnrolled && (
-          <div style={{ color: '#FFD34E', marginTop: 8, fontWeight: 600 }}>
-            Ya estás inscripto en esta actividad.
-          </div>
-        )} */}
       </div>
     </div>
   );
+
+
+
 };
 
 export default ActivityDetailPage; 

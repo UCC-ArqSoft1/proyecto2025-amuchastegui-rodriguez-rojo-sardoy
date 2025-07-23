@@ -67,7 +67,7 @@ const Home = ({ search, setSearch }) => {
   const isSocio = localStorage.getItem('role') !== 'admin';
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff' }}>
+    <div className="home-fadein-bg" style={{ minHeight: '100vh', background: '#fff' }}>
       {localStorage.getItem('role') === 'admin' && (
         <div style={{ maxWidth: 600, margin: '2rem auto', textAlign: 'right', marginTop: 60 }}>
           <button

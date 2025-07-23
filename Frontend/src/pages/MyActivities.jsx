@@ -41,7 +41,7 @@ const MyActivitiesPage = () => {
       ) : error ? (
         <div style={{ textAlign: 'center', marginTop: 60, color: 'red' }}>{error}</div>
       ) : (
-        <ActivityList activities={myActivities} onSelect={a => navigate(`/actividad/${a.id}`)} showLogo={false} />
+        <ActivityList activities={myActivities} onSelect={a => navigate(`/actividad/${a.id}`, { state: { from: 'mis-actividades' } })} showLogo={false} />
       )}
     </div>
   );

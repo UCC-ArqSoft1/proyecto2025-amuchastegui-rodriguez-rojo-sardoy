@@ -1,84 +1,188 @@
 .activity-detail-bg {
   min-height: 100vh;
-  min-width: 100vw;
   width: 100vw;
-  height: 100vh;
-  background: #f7f7f7;
+  background: #fff;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 0;
+  align-items: flex-start;
+  padding: 5.5rem 1rem 2rem 1rem;
+  /* Mayor padding-top para evitar el header */
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .activity-detail-card {
   background: #181818;
   border-radius: 18px;
   box-shadow: 0 4px 32px rgba(0, 0, 0, 0.13);
-  padding: 2.5rem 2.5rem 2rem 2.5rem;
-  max-width: 420px;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  max-width: 700px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInCard 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 
-.activity-detail-icon {
-  margin-bottom: 1.5rem;
-  width: 90px;
-  height: 90px;
+@keyframes fadeInCard {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-fadein-bg {
+  opacity: 0;
+  transform: translateY(10px);
+  /* Menor desplazamiento */
+  animation: fadeInCard 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  padding-top: 4.5rem !important;
+  /* Menor espacio superior */
+}
+
+/* 🟨 Header: botón + título en la misma fila */
+.activity-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 0;
+  gap: 0.1rem;
+  position: relative;
+}
+
+.activity-back-button {
+  background: transparent;
+  border: none;
+  color: #FFD34E;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.4rem 0.2rem 0.4rem 0;
+  text-align: left;
+  margin-right: 0.2rem;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.activity-back-button:hover {
+  text-decoration: underline;
+}
+
+.activity-detail-header {
+  margin-bottom: 1.2rem;
 }
 
 .activity-detail-title {
+  font-size: 2rem;
   color: #FFD34E;
-  font-size: 2.2rem;
-  font-weight: bold;
-  margin-bottom: 0.7rem;
+  margin: 0;
+  flex: none;
   text-align: center;
-  font-family: 'Montserrat', sans-serif;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1;
 }
 
+/* 📸 Imagen centrada */
+.activity-detail-image {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  margin-top: 1.8rem;
+  /* Ajuste para que quede justo debajo del header */
+}
+
+.activity-detail-image img {
+  width: 100%;
+  max-width: 260px;
+  /* Imagen un poco más chica */
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #222;
+}
+
+/* 📋 Info general y descripción */
 .activity-detail-info {
-  color: #eaeaea;
-  font-size: 1.1rem;
-  margin-bottom: 1.2rem;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  /* Menor gap para más compacto */
+  width: 100%;
+  color: #fff;
+  font-size: 1.05rem;
   line-height: 1.5;
+  margin-bottom: 1rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.info-section {
+  margin-bottom: 0.1rem;
+  /* Menor margen inferior entre secciones */
+  margin-top: 0.2rem;
+  /* Menor margen superior */
+  text-align: center;
+}
+
+.info-section h3 {
+  color: #FFD34E;
+  margin-bottom: 0.2rem;
+  /* Menor margen inferior del título */
+  font-size: 1.1rem;
+}
+
+.info-section div {
+  margin: 0.2rem 0;
 }
 
 .activity-detail-label {
   color: #FFD34E;
   font-weight: 600;
-  margin-right: 0.3em;
+  margin-right: 0.25rem;
 }
 
+/* 🟡 Botón principal */
 .activity-detail-btn {
-  width: 100%;
-  padding: 0.9rem;
-  background: #FFD34E;
-  color: #222;
+  padding: 0.8rem 1rem;
   font-weight: bold;
-  font-size: 1.1rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  margin-top: 1.2rem;
-  transition: background 0.2s;
+  width: 100%;
+  max-width: 300px;
+  font-size: 1rem;
+  background-color: #FFD34E;
+  color: #222;
+  transition: background 0.2s ease;
 }
 
 .activity-detail-btn:hover {
-  background: #ffb800;
+  background-color: #e6b800;
 }
 
-.activity-detail-success {
-  color: #4caf50;
-  font-weight: bold;
-  margin-top: 1rem;
-  text-align: center;
+/* Ajustar margen inferior de cupo y superior de descripción */
+.activity-detail-info>.info-section:last-child {
+  margin-top: 0.2rem;
+  /* Menor margen superior de descripción */
 }
 
-.activity-detail-error {
-  color: #e53935;
-  font-weight: bold;
-  margin-top: 1rem;
-  text-align: center;
+.activity-detail-info>.info-section:first-child {
+  margin-bottom: 0.1rem;
+  /* Menor margen inferior de cupo */
 }
